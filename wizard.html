@@ -132,11 +132,7 @@
                 cmd += '    -h ' + document.getElementById("hostname").value + line_end;
             }
             else {
-                if (os == 'windows') {
-                    cmd += '    -h (hostname)' + line_end;
-                } else {
-                    cmd += '    -h $(hostname -s)' + line_end;
-                }
+                errors.push("Missing controller hostname.  Please provide a short name to identify your machine.");
             }
             if (document.getElementById("dns_ip_addr").value) {
                 cmd += '    --dns ' + document.getElementById("dns_ip_addr").value + line_end;
@@ -229,13 +225,13 @@
                 cmd += '            - AUTO_PLOT=' + auto_plot + line_end;
             }
             cmd += '        ports:' + line_end;
-            cmd += '            - 8926' + line_end;
-            cmd += '            - 8927' + line_end;
-            cmd += '            - 8444' + line_end;
-            cmd += '            - 8447' + line_end;
+            cmd += '            - 8926:8926' + line_end;
+            cmd += '            - 8927:8927' + line_end;
+            cmd += '            - 8444:8444' + line_end;
+            cmd += '            - 8447:8447' + line_end;
             if (document.getElementById("blockchain-flax").checked) {
-                cmd += '            - 6888' + line_end;
-                cmd += '            - 6885' + line_end;
+                cmd += '            - 6888:6888' + line_end;
+                cmd += '            - 6885:6885' + line_end;
             }
             return cmd;
         }
@@ -940,7 +936,7 @@
                       </select>
                 </div>
                 <div class="col offset">
-                    <label for="hostname" class="form-label">Controller Hostname (Optional)</label>
+                    <label for="hostname" class="form-label">Controller Hostname</label>
                     <input type="text" class="form-control" placeholder="myhostname" aria-label="hostname"
                         id='hostname' onkeyup="updateDocker()">
                 </div>
