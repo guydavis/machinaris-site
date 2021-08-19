@@ -137,13 +137,6 @@
             if (document.getElementById("dns_ip_addr").value) {
                 cmd += '    --dns ' + document.getElementById("dns_ip_addr").value + line_end;
             }
-            else {
-                if (os == 'windows') {
-                    cmd += '    --dns (Get-DnsClientServerAddress -AddressFamily IPv4 | Select-Object -ExpandProperty ServerAddresses)' + line_end;
-                } else {
-                    //cmd += "    --dns $(cat /etc/resolv.conf | grep nameserver | cut -d ' ' -f 2)" + line_end;
-                }
-            }
             cmd += '    -v ' + document.getElementById("appdata").value + ':/root/.chia' + line_end;
             var cur_vols = $('#volumes').children().length
             var plots_dir = []
