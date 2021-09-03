@@ -83,18 +83,15 @@
                 }
             }
         }
-        function updateAppData() {
+        function updateVolumes() {
             var os = getRadioButtonValue('os')
             if (os == 'windows') {
-                document.getElementById('appdata').value = '${APPDATA}/.machinaris';
                 document.getElementById('volume_host_path0').placeholder = "C:/my_chia_plots";
                 document.getElementById('volume_host_path1').placeholder = "C:/my_chia_plotting";
             } else if (os == 'macintosh') {
-                document.getElementById('appdata').value = '~/.machinaris';
                 document.getElementById('volume_host_path0').placeholder = "/Volumes/disk1";
                 document.getElementById('volume_host_path1').placeholder = "/Volumes/temp1";
             } else {
-                document.getElementById('appdata').value = '~/.machinaris';
                 document.getElementById('volume_host_path0').placeholder = "/mnt/disk1";
                 document.getElementById('volume_host_path1').placeholder = "/mnt/temp1";
             }
@@ -137,7 +134,11 @@
             if (document.getElementById("dns_ip_addr").value) {
                 cmd += '    --dns ' + document.getElementById("dns_ip_addr").value + line_end;
             }
-            cmd += '    -v ' + document.getElementById("appdata").value + ':/root/.chia' + line_end;
+            if (os == 'windows') {
+                cmd += '    -v $HOME/.machinaris:/root/.chia' + line_end;
+            } else {
+                cmd += '    -v ~/.machinaris:/root/.chia' + line_end;
+            }
             var cur_vols = $('#volumes').children().length
             var plots_dir = []
             $('#volumes').children().each((index, element) => {
@@ -193,7 +194,7 @@
             cmd += '        restart: always' + line_end;
             cmd += '        tty: true' + line_end;
             cmd += '        volumes:' + line_end;
-            cmd += '            - ' + document.getElementById("appdata").value + ':/root/.chia' + line_end;
+            cmd += '            - ~/.machinaris:/root/.chia' + line_end;
             var cur_vols = $('#volumes').children().length
             var plots_dir = []
             $('#volumes').children().each((index, element) => {
@@ -248,21 +249,21 @@
                     <div class="row">
                         <div class="col">
                             <input class="form-check-input" type="radio" name="os" id="os-linux" value="linux" checked
-                                onclick="updateAppData(); updateDocker()">
+                                onclick="updateVolumes(); updateDocker()">
                             <label class="form-check-label" for="os-linux">
                                 Linux
                             </label>
                         </div>
                         <div class="col">
                             <input class="form-check-input" type="radio" name="os" id="os-windows" value="windows"
-                                onclick="updateAppData(); updateDocker()">
+                                onclick="updateVolumes(); updateDocker()">
                             <label class="form-check-label" for="os-windows">
                                 Windows
                             </label>
                         </div>
                         <div class="col">
                             <input class="form-check-input" type="radio" name="os" id="os-macintosh" value="macintosh"
-                                onclick="updateAppData(); updateDocker()">
+                                onclick="updateVolumes(); updateDocker()">
                             <label class="form-check-label" for="os-macintosh">
                                 Macintosh
                             </label>
@@ -290,11 +291,6 @@
                 </div>
             </div>
             <div class="row mb-3">
-                <div class="col">
-                    <label for="appdata" class="form-label">Application Data Path</label>
-                    <input type="text" id='appdata' class="form-control" value='~/.machinaris' aria-label="appdata"
-                        onkeyup="updateDocker()">
-                </div>
                 <div class="col">
                     <label for="timezone" class="form-label">Timezone</label>
                     <select id="timezone" class="form-control" name="timezone" aria-label="timezone" onchange="updateDocker()">
