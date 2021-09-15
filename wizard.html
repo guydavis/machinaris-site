@@ -131,6 +131,7 @@
             else {
                 errors.push("Missing controller hostname.  Please provide a short name to identify your machine.");
             }
+            cmd += '    --restart always' + line_end;
             if (document.getElementById("dns_ip_addr").value) {
                 cmd += '    --dns ' + document.getElementById("dns_ip_addr").value + line_end;
             }
