@@ -98,7 +98,6 @@
         }
         function updateDocker() {
             var errors = [];
-            run = updateDockerRun(errors);
             compose = updateDockerCompose(errors);
             if (errors.length > 0) {
                 msg = "<ul style='margin-bottom:0'>";
@@ -108,38 +107,56 @@
                 msg += "</ul>";
                 $('#errors').html(msg);
                 $('#errors').show();
-                $('#run').html('');
                 $('#compose').html('');
             } else {
-                $('#run').html(run);
                 $('#compose').html(compose);
                 $('#errors').hide();
             }
         }
-        function updateDockerRun(errors) {
-            var os = getRadioButtonValue('os')
-            if (os == 'windows') {
-                line_end = ' `\n';
-            } else {
-                line_end = ' \\\n';
+
+        function get_fork_farmer_ports(blockchain) {
+            if (blockchain == "chia") { 
+                return [ 8444, 8447];
             }
-            cmd = 'docker run' + line_end;
-            cmd += '    -d --name machinaris' + line_end;
+            if (blockchain == "flax") { 
+                return [ 6888, 6885];
+            }
+            if (blockchain == "nchain") { 
+                return [ 8444, 8447];  // TODO Find ports
+            }
+            if (blockchain == "chives") { 
+                return [ 8444, 8447];  // TODO Find ports
+            }
+            if (blockchain == "hddcoin") { 
+                return [ 8444, 8447]; // TODO Find ports
+            }
+            console.log("Unable to find farmer ports for fork: " + blockchain);
+        }
+
+        function updateDockerCompose(errors) {
+            var line_end = ' \n';
+            var os = getRadioButtonValue('os')
+            cmd = "version: '3.9'" + line_end;
+            cmd += "services:" + line_end;
+            // First - primary container is Chia-only
+            cmd += "    machinaris:" + line_end;
+            cmd += "        image: ghcr.io/guydavis/machinaris" + line_end;
+            cmd += "        container_name: machinaris" + line_end;
             if (document.getElementById("hostname").value) {
-                cmd += '    -h ' + document.getElementById("hostname").value + line_end;
+                cmd += '        hostname: ' + document.getElementById("hostname").value + line_end;
             }
             else {
                 errors.push("Missing controller hostname.  Please provide a short name to identify your machine.");
             }
-            cmd += '    --restart always' + line_end;
+            if (!document.getElementById("controller_ip_addr").value) {
+                errors.push("Missing controller IP address.  Please provide IP address for workers to contact controller.");
+            }
             if (document.getElementById("dns_ip_addr").value) {
-                cmd += '    --dns ' + document.getElementById("dns_ip_addr").value + line_end;
+                cmd += '        dns: ' + document.getElementById("dns_ip_addr").value + line_end;
             }
-            if (os == 'windows') {
-                cmd += '    -v $HOME/.machinaris:/root/.chia' + line_end;
-            } else {
-                cmd += '    -v ~/.machinaris:/root/.chia' + line_end;
-            }
+            cmd += '        restart: always' + line_end;
+            cmd += '        volumes:' + line_end;
+            cmd += '            - ~/.machinaris:/root/.chia' + line_end;
             var cur_vols = $('#volumes').children().length
             var plots_dir = []
             $('#volumes').children().each((index, element) => {
@@ -153,53 +170,6 @@
                 } else if (!volume_container_path) {
                     errors.push("Empty container path provided for volume at '" + volume_host_path + "'. Please provide a container path.");
                 }
-                cmd += '    -v "' + volume_host_path + ':' + volume_container_path + '"' + line_end;
-                if ($('#volume_type' + index).val() == 'plots') {
-                    plots_dir.push(volume_container_path)
-                }
-            });
-            cmd += '    -e TZ=' + $('#timezone').val() + line_end;
-            cmd += '    -e mode=fullnode' + line_end;
-            cmd += '    -e plots_dir=' + plots_dir.join(':') + line_end;
-            var blockchains = 'chia'
-            if (document.getElementById("blockchain-flax").checked) {
-                blockchains += ',flax'
-            }
-            cmd += '    -e blockchains=' + blockchains + line_end;
-            var auto_plot = getRadioButtonValue('auto_plot');
-            if (auto_plot == "true") {
-                cmd += '    -e AUTO_PLOT=' + auto_plot + line_end;
-            }
-            cmd += '    -p 8926:8926 -p 8927:8927' + line_end;
-            cmd += '    -p 8444:8444 -p 8447:8447' + line_end;
-            if (document.getElementById("blockchain-flax").checked) {
-                cmd += '    -p 6888:6888 -p 6885:6885' + line_end;
-            }
-            cmd += '    ghcr.io/guydavis/machinaris';
-            return cmd;
-        }
-        function updateDockerCompose() {
-            var line_end = ' \n';
-            var os = getRadioButtonValue('os')
-            cmd = "version: '3.9'" + line_end;
-            cmd += "services:" + line_end;
-            cmd += "    machinaris:" + line_end;
-            cmd += "        image: ghcr.io/guydavis/machinaris" + line_end;
-            cmd += "        container_name: machinaris" + line_end;
-            if (document.getElementById("hostname").value) {
-                cmd += '        hostname: ' + document.getElementById("hostname").value + line_end;
-            }
-            if (document.getElementById("dns_ip_addr").value) {
-                cmd += '        dns: ' + document.getElementById("dns_ip_addr").value + line_end;
-            }
-            cmd += '        restart: always' + line_end;
-            cmd += '        volumes:' + line_end;
-            cmd += '            - ~/.machinaris:/root/.chia' + line_end;
-            var cur_vols = $('#volumes').children().length
-            var plots_dir = []
-            $('#volumes').children().each((index, element) => {
-                volume_host_path = document.getElementById("volume_host_path" + index).value;
-                volume_container_path = document.getElementById("volume_container_path" + index).value;
                 cmd += '            - "' + volume_host_path + ':' + volume_container_path + '"' + line_end;
                 if ($('#volume_type' + index).val() == 'plots') {
                     plots_dir.push(volume_container_path)
@@ -209,11 +179,7 @@
             cmd += '            - TZ=' + $('#timezone').val() + line_end;
             cmd += '            - mode=fullnode' + line_end;
             cmd += '            - plots_dir=' + plots_dir.join(':') + line_end;
-            var blockchains = 'chia'
-            if (document.getElementById("blockchain-flax").checked) {
-                blockchains += ',flax'
-            }
-            cmd += '            - blockchains=' + blockchains + line_end;
+            cmd += '            - blockchains=chia' + line_end;
             var auto_plot = getRadioButtonValue('auto_plot');
             if (auto_plot == "true") {
                 cmd += '            - AUTO_PLOT=' + auto_plot + line_end;
@@ -223,9 +189,56 @@
             cmd += '            - 8927:8927' + line_end;
             cmd += '            - 8444:8444' + line_end;
             cmd += '            - 8447:8447' + line_end;
-            if (document.getElementById("blockchain-flax").checked) {
-                cmd += '            - 6888:6888' + line_end;
-                cmd += '            - 6885:6885' + line_end;
+            cmd += line_end;
+
+            // Next, launch a fullnode for each selected fork
+            var blockchains = document.getElementsByName('blockchains');
+            var worker_port = 8928;
+            for(var i = 0; i < blockchains.length; ++i) {
+                if (blockchains[i].checked) {
+                    var blockchain = blockchains[i].value
+                    cmd += "    machinaris-" + blockchain + ":" + line_end;
+                    cmd += "        image: ghcr.io/guydavis/machinaris-" + blockchain + line_end;
+                    cmd += "        container_name: machinaris-" + blockchain + line_end;
+                    if (document.getElementById("hostname").value) {
+                        cmd += '        hostname: ' + document.getElementById("hostname").value + line_end;
+                    }
+                    if (document.getElementById("dns_ip_addr").value) {
+                        cmd += '        dns: ' + document.getElementById("dns_ip_addr").value + line_end;
+                    }
+                    cmd += '        restart: always' + line_end;
+                    cmd += '        volumes:' + line_end;
+                    cmd += '            - ~/.machinaris:/root/.chia' + line_end;
+                    var cur_vols = $('#volumes').children().length
+                    var plots_dir = []
+                    $('#volumes').children().each((index, element) => {
+                        volume_host_path = document.getElementById("volume_host_path" + index).value;
+                        volume_container_path = document.getElementById("volume_container_path" + index).value;
+                        cmd += '            - "' + volume_host_path + ':' + volume_container_path + '"' + line_end;
+                        if ($('#volume_type' + index).val() == 'plots') {
+                            plots_dir.push(volume_container_path)
+                        }
+                    });
+                    cmd += '        environment:' + line_end;
+                    cmd += '            - TZ=' + $('#timezone').val() + line_end;
+                    cmd += '            - mode=fullnode' + line_end;
+                    cmd += '            - controller_host=' + document.getElementById("controller_ip_addr").value + line_end;
+                    cmd += '            - worker_address=' + document.getElementById("controller_ip_addr").value + line_end;
+                    cmd += '            - worker_api_port=' + worker_port + line_end;
+                    cmd += '            - plots_dir=' + plots_dir.join(':') + line_end;
+                    cmd += '            - blockchains=' + blockchain + line_end;
+                    var auto_plot = getRadioButtonValue('auto_plot');
+                    if (auto_plot == "true") {
+                        cmd += '            - AUTO_PLOT=' + auto_plot + line_end;
+                    }
+                    cmd += '        ports:' + line_end;
+                    cmd += '            - ' + worker_port + ':' + worker_port + line_end;
+                    worker_port += 1;
+                    farmer_ports = get_fork_farmer_ports(blockchain);
+                    cmd += '            - ' + farmer_ports[0] + ':' + farmer_ports[0] + line_end;
+                    cmd += '            - ' + farmer_ports[1] + ':' + farmer_ports[1] + line_end;
+                    cmd += line_end;
+                }
             }
             return cmd;
         }
@@ -271,20 +284,34 @@
                     </div>
                 </div>
                 <div class="col offset">
-                    <label for="inputState" class="form-label">Blockchains to Farm</label>
+                    <label for="inputState" class="form-label">Additional Chia Forks to Farm</label>
                     <div class="row">
                         <div class="col">
-                            <input class="form-check-input" type="checkbox" disabled checked name="blockchains"
-                                id="blockchain-chia" onclick="updateDocker()">
-                            <label class="form-check-label" for="blockchain-chia" onclick="updateDocker()">
-                                Chia (required)
+                            <input class="form-check-input" type="checkbox" checked name="blockchains"
+                                id="blockchain-flax" onclick="updateDocker()" value="flax">
+                            <label class="form-check-label" for="blockchain-flax">
+                                Flax
                             </label>
                         </div>
                         <div class="col">
                             <input class="form-check-input" type="checkbox" checked name="blockchains"
-                                id="blockchain-flax" onclick="updateDocker()">
-                            <label class="form-check-label" for="blockchain-flax">
-                                Flax (optional)
+                                id="blockchain-nchain" onclick="updateDocker()" value="nchain">
+                            <label class="form-check-label" for="blockchain-nchain">
+                                N-Chain
+                            </label>
+                        </div>
+                        <div class="col">
+                            <input class="form-check-input" type="checkbox" checked name="blockchains"
+                                id="blockchain-chives" onclick="updateDocker()" value="chives">
+                            <label class="form-check-label" for="blockchain-chives">
+                                Chives
+                            </label>
+                        </div>
+                        <div class="col">
+                            <input class="form-check-input" type="checkbox" checked name="blockchains"
+                                id="blockchain-hddcoin" onclick="updateDocker()" value="hddcoin">
+                            <label class="form-check-label" for="blockchain-hddcoin">
+                                HDDCoin
                             </label>
                         </div>
                     </div>
@@ -929,6 +956,11 @@
                     <input type="text" class="form-control" placeholder="myhostname" aria-label="hostname"
                         id='hostname' onkeyup="updateDocker()">
                 </div>
+                <div class="col offset">
+                    <label for="controller_ip_addr" class="form-label">Controller IP Address</label>
+                    <input type="text" class="form-control" placeholder="192.168.1.125" aria-label="controller_ip_addr"
+                        id='controller_ip_addr' onkeyup="updateDocker()">
+                </div>
                 <div class="col">
                     <label for="dns_ip_addr" class="form-label">DNS Server IP Address (Optional)</label>
                     <input type="text" class="form-control" placeholder="192.168.1.1" aria-label="dns_ip_addr"
@@ -992,14 +1024,6 @@
             </div>
         </div>
     </form>
-    <div class="rounded-3 small" id="docker_run">
-        <a style="float:right" href="#" title="Copy"
-            onclick="copyTextToClipboard(document.getElementById('run').innerHTML); return false">
-            <i class="fs-4 bi-clipboard text-white"></i>
-        </a>
-        <h2>Docker Run</h2>
-        <pre id="run"></pre>
-    </div>
     <div class="rounded-3 small" id="docker_compose">
         <a style="float:right;" href="#" title="Copy"
             onclick="copyTextToClipboard(document.getElementById('compose').innerHTML); return false">
