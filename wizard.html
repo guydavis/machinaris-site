@@ -133,6 +133,25 @@
             console.log("Unable to find farmer ports for fork: " + blockchain);
         }
 
+        function lookup_worker_port(blockchain) {
+            if (blockchain == 'chia') {
+                return 8927;
+            }
+            if (blockchain == 'flax') {
+                return 8928;
+            }
+            if (blockchain == 'nchain') {
+                return 8929;
+            }
+            if (blockchain == 'hddcoin') {
+                return 8930;
+            }
+            if (blockchain == 'chives') {
+                return 8931;
+            }
+            alert("Unknown blockchain fork of selected: " + blockchain);
+        }
+
         function updateDockerCompose(errors) {
             var line_end = ' \n';
             var os = getRadioButtonValue('os')
@@ -140,7 +159,7 @@
             cmd += "services:" + line_end;
             // First - primary container is Chia-only
             cmd += "    machinaris:" + line_end;
-            cmd += "        image: ghcr.io/guydavis/machinaris" + line_end;
+            cmd += "        image: ghcr.io/guydavis/machinaris:develop" + line_end;
             cmd += "        container_name: machinaris" + line_end;
             if (document.getElementById("hostname").value) {
                 cmd += '        hostname: ' + document.getElementById("hostname").value + line_end;
@@ -193,7 +212,6 @@
 
             // Next, launch a fullnode for each selected fork
             var blockchains = document.getElementsByName('blockchains');
-            var worker_port = 8928;
             for(var i = 0; i < blockchains.length; ++i) {
                 if (blockchains[i].checked) {
                     var blockchain = blockchains[i].value
@@ -219,6 +237,7 @@
                             plots_dir.push(volume_container_path)
                         }
                     });
+                    var worker_port = lookup_worker_port(blockchain);
                     cmd += '        environment:' + line_end;
                     cmd += '            - TZ=' + $('#timezone').val() + line_end;
                     cmd += '            - mode=fullnode' + line_end;
@@ -233,7 +252,6 @@
                     }
                     cmd += '        ports:' + line_end;
                     cmd += '            - ' + worker_port + ':' + worker_port + line_end;
-                    worker_port += 1;
                     farmer_ports = get_fork_farmer_ports(blockchain);
                     cmd += '            - ' + farmer_ports[0] + ':' + farmer_ports[0] + line_end;
                     cmd += '            - ' + farmer_ports[1] + ':' + farmer_ports[1] + line_end;
