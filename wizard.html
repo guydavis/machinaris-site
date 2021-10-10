@@ -125,10 +125,10 @@
                 return [ 58445, 58448];
             }
             if (blockchain == "chives") { 
-                return [ 8444, 8447];  // TODO Find ports
+                return [ 9699, 9647]; 
             }
             if (blockchain == "hddcoin") { 
-                return [ 8444, 8447]; // TODO Find ports
+                return [ 28444, 28448]; 
             }
             console.log("Unable to find farmer ports for fork: " + blockchain);
         }
@@ -226,7 +226,7 @@
                     }
                     cmd += '        restart: always' + line_end;
                     cmd += '        volumes:' + line_end;
-                    cmd += '            - ~/.machinaris:/root/.chia' + line_end;
+                    cmd += '            - ~/.machinaris-' + blockchain + ':/root/.chia' + line_end;
                     var cur_vols = $('#volumes').children().length
                     var plots_dir = []
                     $('#volumes').children().each((index, element) => {
