@@ -122,13 +122,13 @@
                 return [ 6888, 6885];
             }
             if (blockchain == "nchain") { 
-                return [ 58445, 58448];
+                return [ 58445, 38447];
             }
             if (blockchain == "chives") { 
                 return [ 9699, 9647]; 
             }
             if (blockchain == "hddcoin") { 
-                return [ 28444, 28448]; 
+                return [ 28444, 28447]; 
             }
             console.log("Unable to find farmer ports for fork: " + blockchain);
         }
@@ -197,6 +197,7 @@
             cmd += '        environment:' + line_end;
             cmd += '            - TZ=' + $('#timezone').val() + line_end;
             cmd += '            - mode=fullnode' + line_end;
+            cmd += '            - worker_address=' + document.getElementById("controller_ip_addr").value + line_end;
             cmd += '            - plots_dir=' + plots_dir.join(':') + line_end;
             cmd += '            - blockchains=chia' + line_end;
             var auto_plot = getRadioButtonValue('auto_plot');
