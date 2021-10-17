@@ -155,11 +155,11 @@
         function updateDockerCompose(errors) {
             var line_end = ' \n';
             var os = getRadioButtonValue('os')
-            cmd = "version: '3.9'" + line_end;
+            cmd = "version: '3.7'" + line_end;
             cmd += "services:" + line_end;
             // First - primary container is Chia-only
             cmd += "    machinaris:" + line_end;
-            cmd += "        image: ghcr.io/guydavis/machinaris:test" + line_end;
+            cmd += "        image: ghcr.io/guydavis/machinaris" + line_end;
             cmd += "        container_name: machinaris" + line_end;
             if (document.getElementById("hostname").value) {
                 cmd += '        hostname: ' + document.getElementById("hostname").value + line_end;
@@ -200,10 +200,6 @@
             cmd += '            - worker_address=' + document.getElementById("controller_ip_addr").value + line_end;
             cmd += '            - plots_dir=' + plots_dir.join(':') + line_end;
             cmd += '            - blockchains=chia' + line_end;
-            var auto_plot = getRadioButtonValue('auto_plot');
-            if (auto_plot == "true") {
-                cmd += '            - AUTO_PLOT=' + auto_plot + line_end;
-            }
             cmd += '        ports:' + line_end;
             cmd += '            - 8926:8926' + line_end;
             cmd += '            - 8927:8927' + line_end;
@@ -217,7 +213,7 @@
                 if (blockchains[i].checked) {
                     var blockchain = blockchains[i].value
                     cmd += "    machinaris-" + blockchain + ":" + line_end;
-                    cmd += "        image: ghcr.io/guydavis/machinaris-" + blockchain + ':test' + line_end;
+                    cmd += "        image: ghcr.io/guydavis/machinaris-" + blockchain + line_end;
                     cmd += "        container_name: machinaris-" + blockchain + line_end;
                     if (document.getElementById("hostname").value) {
                         cmd += '        hostname: ' + document.getElementById("hostname").value + line_end;
@@ -233,6 +229,9 @@
                     $('#volumes').children().each((index, element) => {
                         volume_host_path = document.getElementById("volume_host_path" + index).value;
                         volume_container_path = document.getElementById("volume_container_path" + index).value;
+                        if ((blockchain == "chives") && ($('#volume_type' + index).val() == 'plots')) {
+                            volume_host_path += '/chives'
+                        }
                         cmd += '            - "' + volume_host_path + ':' + volume_container_path + '"' + line_end;
                         if ($('#volume_type' + index).val() == 'plots') {
                             plots_dir.push(volume_container_path)
@@ -247,10 +246,6 @@
                     cmd += '            - worker_api_port=' + worker_port + line_end;
                     cmd += '            - plots_dir=' + plots_dir.join(':') + line_end;
                     cmd += '            - blockchains=' + blockchain + line_end;
-                    var auto_plot = getRadioButtonValue('auto_plot');
-                    if (auto_plot == "true") {
-                        cmd += '            - AUTO_PLOT=' + auto_plot + line_end;
-                    }
                     cmd += '        ports:' + line_end;
                     cmd += '            - ' + worker_port + ':' + worker_port + line_end;
                     farmer_ports = get_fork_farmer_ports(blockchain);
