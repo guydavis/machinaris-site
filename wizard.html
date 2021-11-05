@@ -242,6 +242,7 @@
                     cmd += '        restart: always' + line_end;
                     cmd += '        volumes:' + line_end;
                     cmd += '            - ~/.machinaris-' + blockchain + ':/root/.chia' + line_end;
+                    cmd += '            - ~/.machinaris/mnemonic.txt:/root/.chia/mnemonic.txt:ro' + line_end;
                     var cur_vols = $('#volumes').children().length
                     var plots_dir = []
                     $('#volumes').children().each((index, element) => {
@@ -269,6 +270,8 @@
                     farmer_ports = get_fork_farmer_ports(blockchain);
                     cmd += '            - ' + farmer_ports[0] + ':' + farmer_ports[0] + line_end;
                     cmd += '            - ' + farmer_ports[1] + ':' + farmer_ports[1] + line_end;
+                    cmd += '        depends_on:' + line_end;
+                    cmd += '            - machinaris' + line_end;
                     cmd += line_end;
                 }
             }
