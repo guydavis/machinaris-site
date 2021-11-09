@@ -115,6 +115,9 @@
         }
 
         function get_fork_farmer_ports(blockchain) {
+            if (blockchain == "cactus") { 
+                return [ 11444, 11447]; 
+            }
             if (blockchain == "chia") { 
                 return [ 8444, 8447];
             }
@@ -134,10 +137,13 @@
                 return [ 28444, 28447]; 
             }
             if (blockchain == "silicoin") { 
-                return [ 11444, 11447]; 
+                return [ 22222, "TODO"]; 
             }
             if (blockchain == "staicoin") { 
                 return [ 1999, 1692]; 
+            }
+            if (blockchain == "stor") { 
+                return [ 8668, 8337]; 
             }
             console.log("Unable to find farmer ports for fork: " + blockchain);
         }
@@ -322,7 +328,7 @@
                     <label for="inputState" class="form-label">Additional Chia Forks to Farm</label>
                     <div class="row">
                         <div class="col">
-                            <input class="form-check-input" type="checkbox" checked name="blockchains"
+                            <input class="form-check-input" type="checkbox" name="blockchains"
                                 id="blockchain-chives" onclick="updateDocker()" value="chives">
                             <label class="form-check-label" for="blockchain-chives">
                                 Chives
@@ -350,24 +356,33 @@
                             </label>
                         </div>
                         <div class="col">
-                            <input class="form-check-input" type="checkbox" checked name="blockchains"
+                            <input class="form-check-input" type="checkbox" name="blockchains"
                                 id="blockchain-nchain" onclick="updateDocker()" value="nchain">
                             <label class="form-check-label" for="blockchain-nchain">
                                 N-Chain
                             </label>
                         </div>
+                        <!--
                         <div class="col">
-                            <input class="form-check-input" type="checkbox" checked name="blockchains"
+                            <input class="form-check-input" type="checkbox" name="blockchains"
                                 id="blockchain-silicoin" onclick="updateDocker()" value="silicoin">
                             <label class="form-check-label" for="blockchain-silicoin">
                                 Silicoin
                             </label>
                         </div>
+                        -->
                         <div class="col">
-                            <input class="form-check-input" type="checkbox" checked name="blockchains"
+                            <input class="form-check-input" type="checkbox" name="blockchains"
                                 id="blockchain-staicoin" onclick="updateDocker()" value="staicoin">
                             <label class="form-check-label" for="blockchain-staicoin">
                                 Staicoin
+                            </label>
+                        </div>
+                        <div class="col">
+                            <input class="form-check-input" type="checkbox" name="blockchains"
+                                id="blockchain-stor" onclick="updateDocker()" value="stor">
+                            <label class="form-check-label" for="blockchain-stor">
+                                Stor
                             </label>
                         </div>
                     </div>
