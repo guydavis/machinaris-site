@@ -96,11 +96,21 @@
                 document.getElementById('volume_host_path1').placeholder = "/mnt/temp1";
             }
         }
+        function checkForWarnings() {
+            warnings = [];
+            var blockchain_action = getRadioButtonValue('blockchain');
+            if (blockchain_action == 'download') {
+                warnings.push("You have choosen to download a blockchain database and <b>acknowledge the inherent risks</b>.  Please see the Machinaris <a href='https://github.com/guydavis/machinaris/wiki/Blockchains#blockchain-download' target='_blanks'>wiki for details</a>.");
+            } else if (blockchain_action == 'import') {
+                warnings.push("You have choosen to manually import your own blockchain database.  Please see the Machinaris <a href='https://github.com/guydavis/machinaris/wiki/Blockchains#blockchain-import' target='_blanks'>wiki for details</a>.");
+            }
+            return warnings;
+        }
         function updateDocker() {
             var errors = [];
             compose = updateDockerCompose(errors);
             if (errors.length > 0) {
-                msg = "<ul style='margin-bottom:0'>";
+                msg = "<b>Please complete the following to generate your docker-compose.yml contents:</b><ul style='margin-bottom:0'>";
                 for (let i = 0; i < errors.length; i++) {
                     msg += "<li>" + errors[i] + "</li>";
                 }
@@ -112,8 +122,19 @@
                 $('#compose').html(compose);
                 $('#errors').hide();
             }
+            var warnings = checkForWarnings();
+            if (warnings.length > 0) {
+                msg = "<b>Please note the following important warnings:</b><ul style='margin-bottom:0'>";
+                for (let i = 0; i < warnings.length; i++) {
+                    msg += "<li>" + warnings[i] + "</li>";
+                }
+                msg += "</ul>";
+                $('#warnings').html(msg);
+                $('#warnings').show();
+            } else {
+                $('#warnings').hide();
+            }
         }
-
         function get_fork_farmer_ports(blockchain) {
             if (blockchain == "cactus") { 
                 return [ 11444, 11447 ]; 
@@ -185,12 +206,12 @@
             if (blockchain == 'stor') {
                 return 8935;
             }
-            alert("Unknown blockchain fork of selected: " + blockchain);
         }
 
         function updateDockerCompose(errors) {
             var line_end = ' \n';
-            var os = getRadioButtonValue('os')
+            var os = getRadioButtonValue('os');
+            var blockchain_action = getRadioButtonValue('blockchain');
             cmd = "version: '3.7'" + line_end;
             cmd += "services:" + line_end;
             // First - primary container is Chia-only
@@ -233,6 +254,9 @@
             cmd += '            - worker_address=' + document.getElementById("controller_ip_addr").value + line_end;
             cmd += '            - plots_dir=' + plots_dir.join(':') + line_end;
             cmd += '            - blockchains=chia' + line_end;
+            if (blockchain_action == "download") {
+                cmd += '            - blockchain_db_download=true' + line_end;
+            }
             cmd += '        ports:' + line_end;
             cmd += '            - 8926:8926' + line_end;
             cmd += '            - 8927:8927' + line_end;
@@ -277,6 +301,9 @@
                     cmd += '            - worker_api_port=' + worker_port + line_end;
                     cmd += '            - plots_dir=' + plots_dir.join(':') + line_end;
                     cmd += '            - blockchains=' + blockchain + line_end;
+                    if (blockchain_action == "download") {
+                        cmd += '            - blockchain_db_download=true' + line_end;
+                    }
                     cmd += '        ports:' + line_end;
                     cmd += '            - ' + worker_port + ':' + worker_port + line_end;
                     farmer_ports = get_fork_farmer_ports(blockchain);
@@ -303,6 +330,7 @@
     <form>
         <div class="rounded-2">
             <div class="alert alert-warning" role="alert" id='errors'></div>
+            <div class="alert alert-secondary" role="alert" id='warnings'></div>
             <div class="row mb-3">
                 <div class="col offset">
                     <label for="hostname" class="form-label">Controller Hostname</label>
@@ -338,6 +366,32 @@
                                 onclick="updateVolumes(); updateDocker()">
                             <label class="form-check-label" for="os-windows">
                                 Windows
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col offset">
+                    <label for="inputState" class="form-label">Initial Blockchain</label>
+                    <div class="row">
+                        <div class="col">
+                            <input class="form-check-input" type="radio" name="blockchain" id="blockchain-sync" value="sync" checked
+                                onclick="updateVolumes(); updateDocker()">
+                            <label class="form-check-label" for="blockchain-sync">
+                                Standard Sync
+                            </label>
+                        </div>
+                        <div class="col">
+                            <input class="form-check-input" type="radio" name="blockchain" id="blockchain-import" value="import"
+                                onclick="updateVolumes(); updateDocker()" >
+                            <label class="form-check-label" for="blockchain-import">
+                                Import My Own
+                            </label>
+                        </div>
+                        <div class="col">
+                            <input class="form-check-input" type="radio" name="blockchain" id="blockchain-download" value="download"
+                                onclick="updateVolumes(); updateDocker()">
+                            <label class="form-check-label" for="blockchain-download">
+                                Download New
                             </label>
                         </div>
                     </div>
