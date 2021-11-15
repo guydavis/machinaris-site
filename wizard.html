@@ -78,7 +78,7 @@
             new_vol_row = new_vol_row.replaceAll('0', cur_vols);
             var os = getRadioButtonValue('os');
             if (os == 'windows') {
-                new_value_row = new_vol_row.replaceAll('style="display:none"', '');
+                new_vol_row = new_vol_row.replaceAll('style="display:none"', '');
             }
             $('#volumes').append(new_vol_row);
             setTimeout(updateDocker, 1000);
@@ -281,7 +281,7 @@
                 cmd += '            - blockchain_db_download=true' + line_end;
             }
             if (remote_windows_shares.length > 0) {
-                cmd += '            - smb_mounts=' + remote_windows_shares.join() + line_end;
+                cmd += '            - remote_shares=' + remote_windows_shares.join() + line_end;
             }
             cmd += '        ports:' + line_end;
             cmd += '            - 8926:8926' + line_end;
@@ -336,7 +336,7 @@
                         cmd += '            - blockchain_db_download=true' + line_end;
                     }
                     if (remote_windows_shares.length > 0) {
-                        cmd += '            - smb_mounts=' + remote_windows_shares.join() + line_end;
+                        cmd += '            - remote_shares=' + remote_windows_shares.join() + line_end;
                     }
                     cmd += '        ports:' + line_end;
                     cmd += '            - ' + worker_port + ':' + worker_port + line_end;
