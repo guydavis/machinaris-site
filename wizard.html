@@ -154,6 +154,9 @@
             }
         }
         function get_fork_farmer_ports(blockchain) {
+            if (blockchain == "btcgreen") { 
+                return [ 9282, 18655 ]; 
+            }
             if (blockchain == "cactus") { 
                 return [ 11444, 11447 ]; 
             }
@@ -191,6 +194,9 @@
         }
 
         function lookup_worker_port(blockchain) {
+            if (blockchain == 'btcgreen') {
+                return 8938;
+            }
             if (blockchain == 'cactus') {
                 return 8936;
             }
@@ -440,6 +446,13 @@
                 <div class="col offset">
                     <label for="inputState" class="form-label">Additional Chia Forks to Farm</label>
                     <div class="row">
+                        <div class="col">
+                            <input class="form-check-input" type="checkbox" name="blockchains"
+                                id="blockchain-btcgreen" onclick="updateDocker()" value="btcgreen">
+                            <label class="form-check-label" for="blockchain-btcgreen">
+                                BTCGreen
+                            </label>
+                        </div>
                         <div class="col">
                             <input class="form-check-input" type="checkbox" name="blockchains"
                                 id="blockchain-cactus" onclick="updateDocker()" value="cactus">
