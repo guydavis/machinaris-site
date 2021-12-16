@@ -184,6 +184,9 @@
             if (blockchain == "nchain") { 
                 return [ 58445, 38447 ];
             }
+            if (blockchain == "shibgreen") { 
+                return [ 7442, 18974 ]; 
+            }
             if (blockchain == "staicoin") { 
                 return [ 1999, 1692 ]; 
             }
@@ -240,7 +243,7 @@
             cmd += "services:" + line_end;
             // First - primary container is Chia-only
             cmd += "    machinaris:" + line_end;
-            cmd += "        image: ghcr.io/guydavis/machinaris:latest" + line_end;
+            cmd += "        image: ghcr.io/guydavis/machinaris:test" + line_end;
             cmd += "        container_name: machinaris" + line_end;
             if (document.getElementById("hostname").value) {
                 cmd += '        hostname: ' + document.getElementById("hostname").value + line_end;
@@ -307,7 +310,7 @@
                 if (blockchains[i].checked) {
                     var blockchain = blockchains[i].value
                     cmd += "    machinaris-" + blockchain + ":" + line_end;
-                    cmd += "        image: ghcr.io/guydavis/machinaris-" + blockchain + ':latest' + line_end;
+                    cmd += "        image: ghcr.io/guydavis/machinaris-" + blockchain + ':test' + line_end;
                     cmd += "        container_name: machinaris-" + blockchain + line_end;
                     if (document.getElementById("hostname").value) {
                         cmd += '        hostname: ' + document.getElementById("hostname").value + line_end;
@@ -432,13 +435,13 @@
                                 Import My Own
                             </label>
                         </div>
-                        <div class="col">
+                        <!--div class="col">
                             <input class="form-check-input" type="radio" name="blockchain" id="blockchain-download" value="download"
                                 onclick="updateVolumes(); updateDocker()">
                             <label class="form-check-label" for="blockchain-download">
                                 Download New
                             </label>
-                        </div>
+                        </div-->
                     </div>
                 </div>
             </div>
@@ -513,6 +516,13 @@
                         </div>
                         <div class="col">
                             <input class="form-check-input" type="checkbox" name="blockchains"
+                                id="blockchain-shibgreen" onclick="updateDocker()" value="shibgreen">
+                            <label class="form-check-label" for="blockchain-shibgreen">
+                                SHIBGreen
+                            </label>
+                        </div>
+                        <div class="col">
+                            <input class="form-check-input" type="checkbox" name="blockchains"
                                 id="blockchain-staicoin" onclick="updateDocker()" value="staicoin">
                             <label class="form-check-label" for="blockchain-staicoin">
                                 Staicoin
@@ -525,7 +535,7 @@
                                 Stor
                             </label>
                         </div>
-                        <div class="col">&nbsp;</div>
+                        <!--div class="col">&nbsp;</div-->
                     </div>
                 </div>
             </div>
