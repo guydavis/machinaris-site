@@ -227,6 +227,9 @@
             if (blockchain == 'nchain') {
                 return 8929;
             }
+            if (blockchain == 'shibgreen') {
+                return 8939;
+            }
             if (blockchain == 'staicoin') {
                 return 8934;
             }
@@ -243,7 +246,7 @@
             cmd += "services:" + line_end;
             // First - primary container is Chia-only
             cmd += "    machinaris:" + line_end;
-            cmd += "        image: ghcr.io/guydavis/machinaris:test" + line_end;
+            cmd += "        image: ghcr.io/guydavis/machinaris:latest" + line_end;
             cmd += "        container_name: machinaris" + line_end;
             if (document.getElementById("hostname").value) {
                 cmd += '        hostname: ' + document.getElementById("hostname").value + line_end;
@@ -310,7 +313,7 @@
                 if (blockchains[i].checked) {
                     var blockchain = blockchains[i].value
                     cmd += "    machinaris-" + blockchain + ":" + line_end;
-                    cmd += "        image: ghcr.io/guydavis/machinaris-" + blockchain + ':test' + line_end;
+                    cmd += "        image: ghcr.io/guydavis/machinaris-" + blockchain + ':latest' + line_end;
                     cmd += "        container_name: machinaris-" + blockchain + line_end;
                     if (document.getElementById("hostname").value) {
                         cmd += '        hostname: ' + document.getElementById("hostname").value + line_end;
