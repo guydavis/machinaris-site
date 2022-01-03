@@ -118,7 +118,7 @@
             warnings = [];
             var blockchain_action = getRadioButtonValue('blockchain');
             if (blockchain_action == 'download') {
-                warnings.push("You have choosen to download a blockchain database and <b>acknowledge the inherent risks</b>.  Please see the Machinaris <a href='https://github.com/guydavis/machinaris/wiki/Blockchains#blockchain-download' target='_blanks'>wiki for details</a>.");
+                warnings.push("You have choosen to download a blockchain database if available and <b>acknowledge the inherent risks</b>.  Please see the Machinaris <a href='https://github.com/guydavis/machinaris/wiki/Blockchains#blockchain-download' target='_blanks'>wiki for details</a>.");
             } else if (blockchain_action == 'import') {
                 warnings.push("You have choosen to manually import your own blockchain database.  Please see the Machinaris <a href='https://github.com/guydavis/machinaris/wiki/Blockchains#blockchain-import' target='_blanks'>wiki for details</a>.");
             }
@@ -181,6 +181,9 @@
             if (blockchain == "maize") { 
                 return [ 8644, 8647 ]; 
             }
+            if (blockchain == "mmx") { 
+                return [ 12332 ]; 
+            }
             if (blockchain == "nchain") { 
                 return [ 58445, 38447 ];
             }
@@ -222,7 +225,7 @@
                 return 8930;
             }
             if (blockchain == 'maize') {
-                return 8933;
+                return 8940;
             }
             if (blockchain == 'nchain') {
                 return 8929;
@@ -242,11 +245,24 @@
             var line_end = ' \n';
             var os = getRadioButtonValue('os');
             var blockchain_action = getRadioButtonValue('blockchain');
+            var blockchains = document.getElementsByName('blockchains');
+            var image_tag = "latest"
+            if (blockchain_action == "download") {
+                image_tag = "develop"
+            }
+            for(var i = 0; i < blockchains.length; ++i) {
+                if ((image_tag == "latest") && blockchains[i].checked && (blockchains[i].value == 'testchain')) {
+                    image_tag = "test"
+                }
+                if (blockchains[i].checked && (blockchains[i].value == 'mmx' || blockchains[i].value == 'staicoin')) {
+                    image_tag = "develop"
+                }
+            }
             cmd = "version: '3.7'" + line_end;
             cmd += "services:" + line_end;
             // First - primary container is Chia-only
             cmd += "    machinaris:" + line_end;
-            cmd += "        image: ghcr.io/guydavis/machinaris:test" + line_end;
+            cmd += "        image: ghcr.io/guydavis/machinaris:" + image_tag + line_end;
             cmd += "        container_name: machinaris" + line_end;
             if (document.getElementById("hostname").value) {
                 cmd += '        hostname: ' + document.getElementById("hostname").value + line_end;
@@ -313,7 +329,7 @@
                 if (blockchains[i].checked) {
                     var blockchain = blockchains[i].value
                     cmd += "    machinaris-" + blockchain + ":" + line_end;
-                    cmd += "        image: ghcr.io/guydavis/machinaris-" + blockchain + ':test' + line_end;
+                    cmd += "        image: ghcr.io/guydavis/machinaris-" + blockchain + ':' + image_tag + line_end;
                     cmd += "        container_name: machinaris-" + blockchain + line_end;
                     if (document.getElementById("hostname").value) {
                         cmd += '        hostname: ' + document.getElementById("hostname").value + line_end;
@@ -354,7 +370,9 @@
                     cmd += '            - ' + worker_port + ':' + worker_port + line_end;
                     farmer_ports = get_fork_farmer_ports(blockchain);
                     cmd += '            - ' + farmer_ports[0] + ':' + farmer_ports[0] + line_end;
-                    cmd += '            - ' + farmer_ports[1] + ':' + farmer_ports[1] + line_end;
+                    if (farmer_ports.length == 2) {
+                        cmd += '            - ' + farmer_ports[1] + ':' + farmer_ports[1] + line_end;
+                    }
                     if (remote_windows_shares.length > 0) {
                         cmd += '        cap_add:' + line_end;
                         cmd += '            - SYS_ADMIN' + line_end;
@@ -438,19 +456,19 @@
                                 Import My Own
                             </label>
                         </div>
-                        <!--div class="col">
+                        <div class="col">
                             <input class="form-check-input" type="radio" name="blockchain" id="blockchain-download" value="download"
                                 onclick="updateVolumes(); updateDocker()">
                             <label class="form-check-label" for="blockchain-download">
                                 Download New
                             </label>
-                        </div-->
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="row mb-3">
                 <div class="col offset">
-                    <label for="inputState" class="form-label">Additional Chia Forks to Farm</label>
+                    <label for="inputState" class="form-label">Additional Blockchains to Farm</label>
                     <div class="row">
                         <div class="col">
                             <input class="form-check-input" type="checkbox" name="blockchains"
@@ -494,8 +512,6 @@
                                 Flora
                             </label>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="col">
                             <input class="form-check-input" type="checkbox" name="blockchains"
                                 id="blockchain-hddcoin" onclick="updateDocker()" value="hddcoin">
@@ -503,11 +519,20 @@
                                 HDDCoin
                             </label>
                         </div>
+                    </div>
+                    <div class="row">
                         <div class="col">
                             <input class="form-check-input" type="checkbox" name="blockchains"
                                 id="blockchain-maize" onclick="updateDocker()" value="maize">
                             <label class="form-check-label" for="blockchain-maize">
                                 Maize
+                            </label>
+                        </div>
+                        <div class="col">
+                            <input class="form-check-input" type="checkbox" name="blockchains"
+                                id="blockchain-mmx" onclick="updateDocker()" value="mmx">
+                            <label class="form-check-label" for="blockchain-mmx">
+                                MMX
                             </label>
                         </div>
                         <div class="col">
@@ -538,7 +563,7 @@
                                 Stor
                             </label>
                         </div>
-                        <!--div class="col">&nbsp;</div-->
+                        <div class="col">&nbsp;</div>
                     </div>
                 </div>
             </div>
