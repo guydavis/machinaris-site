@@ -182,7 +182,7 @@
                 return [ 8644, 8647 ]; 
             }
             if (blockchain == "mmx") { 
-                return [ 12332 ]; 
+                return [ 12333 ]; 
             }
             if (blockchain == "nchain") { 
                 return [ 58445, 38447 ];
@@ -248,13 +248,13 @@
             var blockchains = document.getElementsByName('blockchains');
             var image_tag = "latest"
             if (blockchain_action == "download") {
-                image_tag = "develop"
+                image_tag = "test"
             }
             for(var i = 0; i < blockchains.length; ++i) {
-                if ((image_tag == "latest") && blockchains[i].checked && (blockchains[i].value == 'testchain')) {
+                if ((image_tag == "latest") && blockchains[i].checked && (blockchains[i].value == 'staicoin')) {
                     image_tag = "test"
                 }
-                if (blockchains[i].checked && (blockchains[i].value == 'mmx' || blockchains[i].value == 'staicoin')) {
+                if (blockchains[i].checked && (blockchains[i].value == 'mmx')) {
                     image_tag = "develop"
                 }
             }
