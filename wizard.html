@@ -225,6 +225,9 @@
                 return 8930;
             }
             if (blockchain == 'maize') {
+                return 8933;
+            }
+            if (blockchain == 'mmx') {
                 return 8940;
             }
             if (blockchain == 'nchain') {
@@ -345,6 +348,9 @@
                         volume_container_path = document.getElementById("volume_container_path" + index).value;
                         if ((blockchain == "chives") && ($('#volume_type' + index).val() == 'plots')) {
                             volume_host_path += '/chives'
+                        }
+                        if ((blockchain == "mmx") && ($('#volume_type' + index).val() == 'plots')) {
+                            volume_host_path += '/mmx'
                         }
                         cmd += '            - "' + volume_host_path + ':' + volume_container_path + '"' + line_end;
                         if ($('#volume_type' + index).val() == 'plots') {
