@@ -182,7 +182,7 @@
                 return [ 8644, 8647 ]; 
             }
             if (blockchain == "mmx") { 
-                return [ 12333 ]; 
+                return [ 12333, 11330 ]; 
             }
             if (blockchain == "nchain") { 
                 return [ 58445, 38447 ];
@@ -251,13 +251,13 @@
             var blockchains = document.getElementsByName('blockchains');
             var image_tag = "latest"
             if (blockchain_action == "download") {
-                image_tag = "test"
+                image_tag = "develop"
             }
             for(var i = 0; i < blockchains.length; ++i) {
-                if ((image_tag == "latest") && blockchains[i].checked && (blockchains[i].value == 'staicoin')) {
+                if ((image_tag == "latest") && blockchains[i].checked && (blockchains[i].value == 'foobar')) {
                     image_tag = "test"
                 }
-                if (blockchains[i].checked && (blockchains[i].value == 'mmx')) {
+                if (blockchains[i].checked && (blockchains[i].value == 'mmx' || blockchains[i].value == 'staicoin')) {
                     image_tag = "develop"
                 }
             }
@@ -340,7 +340,9 @@
                     cmd += '        restart: always' + line_end;
                     cmd += '        volumes:' + line_end;
                     cmd += '            - ~/.machinaris-' + blockchain + ':/root/.chia' + line_end;
-                    cmd += '            - ~/.machinaris/mnemonic.txt:/root/.chia/mnemonic.txt:ro' + line_end;
+                    if (blockchain != 'mmx') {
+                        cmd += '            - ~/.machinaris/mnemonic.txt:/root/.chia/mnemonic.txt:ro' + line_end;
+                    }
                     var cur_vols = $('#volumes').children().length
                     var plots_dir = []
                     $('#volumes').children().each((index, element) => {
