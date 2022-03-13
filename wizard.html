@@ -190,6 +190,9 @@
             if (blockchain == "shibgreen") { 
                 return [ 7442, 18974 ]; 
             }
+            if (blockchain == "silicoin") { 
+                return [ 22222, 22447 ]; 
+            }
             if (blockchain == "staicoin") { 
                 return [ 1999, 1692 ]; 
             }
@@ -235,6 +238,9 @@
             }
             if (blockchain == 'shibgreen') {
                 return 8939;
+            }
+            if (blockchain == 'silicoin') {
+                return 8941;
             }
             if (blockchain == 'staicoin') {
                 return 8934;
@@ -559,6 +565,13 @@
                         </div>
                         <div class="col">
                             <input class="form-check-input" type="checkbox" name="blockchains"
+                                id="blockchain-silicoin" onclick="updateDocker()" value="silicoin">
+                            <label class="form-check-label" for="blockchain-silicoin">
+                                Silicoin
+                            </label>
+                        </div>
+                        <div class="col">
+                            <input class="form-check-input" type="checkbox" name="blockchains"
                                 id="blockchain-staicoin" onclick="updateDocker()" value="staicoin">
                             <label class="form-check-label" for="blockchain-staicoin">
                                 Staicoin
@@ -571,7 +584,7 @@
                                 Stor
                             </label>
                         </div>
-                        <div class="col">&nbsp;</div>
+                        <!--div class="col">&nbsp;</div-->
                     </div>
                 </div>
             </div>
