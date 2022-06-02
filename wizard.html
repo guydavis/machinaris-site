@@ -182,7 +182,7 @@
                 return [ 8644, 8647 ]; 
             }
             if (blockchain == "mmx") { 
-                return [ 12335, 11330 ]; 
+                return [ 12336, 11330 ]; 
             }
             if (blockchain == "nchain") { 
                 return [ 58445, 38447 ];
@@ -256,14 +256,14 @@
             var blockchain_action = getRadioButtonValue('blockchain');
             var blockchains = document.getElementsByName('blockchains');
             var image_tag = "latest"
-            if (blockchain_action == "foobuz") {
-                image_tag = "test"
+            if (blockchain_action == "download") {
+                image_tag = "latest"
             }
             for(var i = 0; i < blockchains.length; ++i) {
                 if ((image_tag == "latest") && blockchains[i].checked && (blockchains[i].value == 'foobaz')) {
                     image_tag = "test"
                 }
-                if (blockchains[i].checked && (blockchains[i].value == 'fooboz' || blockchains[i].value == 'foobar')) {
+                if (blockchains[i].checked && (blockchains[i].value == 'mmx' || blockchains[i].value == 'foobar')) {
                     image_tag = "develop"
                 }
             }
