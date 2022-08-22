@@ -117,10 +117,19 @@
         function checkForWarnings() {
             warnings = [];
             var blockchain_action = getRadioButtonValue('blockchain');
+            var blockchains = document.getElementsByName('blockchains');
+            var blockchains_selected = 0;
+            for(var i = 0; i < blockchains.length; ++i) {
+                if (blockchains[i].checked) {
+                    blockchains_selected += 1;
+                }
+            }
             if (blockchain_action == 'download') {
                 warnings.push("You have choosen to download a blockchain database if available and <b>acknowledge the inherent risks</b>.  Please see the Machinaris <a href='https://github.com/guydavis/machinaris/wiki/Blockchains#blockchain-download' target='_blanks'>wiki for details</a>.");
             } else if (blockchain_action == 'import') {
                 warnings.push("You have choosen to manually import your own blockchain database.  Please see the Machinaris <a href='https://github.com/guydavis/machinaris/wiki/Blockchains#blockchain-import' target='_blanks'>wiki for details</a>.");
+            } else if (blockchains_selected >= 5) { // Chia not counted for some reason
+                warnings.push("You have choosen more than five blockchains to launch at once. During initial sync, each blockchain uses more computer resources.  As such, please add blockchains in batches of five at a time, until each batch is fully synced.  This guidance can be lifted for high performance machines.");
             }
             return warnings;
         }
@@ -154,6 +163,9 @@
             }
         }
         function get_fork_farmer_ports(blockchain) {
+            if (blockchain == "apple") { 
+                return [ 26666, 26667 ]; 
+            }
             if (blockchain == "bpx") { 
                 return [ 27911, 27914 ]; 
             }
@@ -166,11 +178,17 @@
             if (blockchain == "chia") { 
                 return [ 8444, 8447 ];
             }
+            if (blockchain == "chinilla") { 
+                return [ 43444, 43447 ];
+            }
+            if (blockchain == "chives") { 
+                return [ 9699, 9647 ]; 
+            }
             if (blockchain == "cryptodoge") { 
                 return [ 15994, 16895 ];
             }
             if (blockchain == "ecostake") { 
-                return [ 38444, 38448 ];
+                return [ 38444, 38441 ];
             }
             if (blockchain == "flax") { 
                 return [ 6888, 6885 ];
@@ -178,14 +196,20 @@
             if (blockchain == "flora") { 
                 return [ 18644, 18647 ];
             }
-            if (blockchain == "chives") { 
-                return [ 9699, 9647 ]; 
+            if (blockchain == "gold") { 
+                return [ 14444, 14447 ]; 
             }
             if (blockchain == "hddcoin") { 
                 return [ 28444, 28447 ]; 
             }
+            if (blockchain == "littlelambocoin") { 
+                return [ 4575, 18981 ]; 
+            }
             if (blockchain == "maize") { 
                 return [ 8644, 8647 ]; 
+            }
+            if (blockchain == "mint") { 
+                return [ 29222, 29227 ]; 
             }
             if (blockchain == "mmx") { 
                 return [ 12336, 11330 ]; 
@@ -211,10 +235,19 @@
             if (blockchain == "stor") { 
                 return [ 8668, 8337 ]; 
             }
+            if (blockchain == "tad") { 
+                return [ 4044, 4447 ]; 
+            }
+            if (blockchain == "wheat") { 
+                return [ 21333, 21447 ]; 
+            }
             console.log("Unable to find farmer ports for fork: " + blockchain);
         }
 
         function lookup_worker_port(blockchain) {
+            if (blockchain == 'apple') {
+                return 8947;
+            }
             if (blockchain == 'bpx') {
                 return 8945;
             }
@@ -226,6 +259,9 @@
             }
             if (blockchain == 'chia') {
                 return 8927;
+            }
+            if (blockchain == 'chinilla') {
+                return 8948;
             }
             if (blockchain == 'chives') {
                 return 8931;
@@ -242,11 +278,20 @@
             if (blockchain == 'flora') {
                 return 8932;
             }
+            if (blockchain == 'gold') {
+                return 8949;
+            }
             if (blockchain == 'hddcoin') {
                 return 8930;
             }
+            if (blockchain == 'littlelambocoin') {
+                return 8946;
+            }
             if (blockchain == 'maize') {
                 return 8933;
+            }
+            if (blockchain == 'mint') {
+                return 8950;
             }
             if (blockchain == 'mmx') {
                 return 8940;
@@ -272,6 +317,12 @@
             if (blockchain == 'stor') {
                 return 8935;
             }
+            if (blockchain == 'tad') {
+                return 8951;
+            }
+            if (blockchain == 'wheat') {
+                return 8952;
+            }
         }
 
         function updateDockerCompose(errors) {
@@ -291,7 +342,7 @@
                 {
                     image_tag = "test"
                 }
-                if (blockchains[i].checked && (blockchains[i].value == 'fuzzbuz' || blockchains[i].value == 'foobar')) {
+                if (blockchains[i].checked && (blockchains[i].value == 'apple' || blockchains[i].value == 'chinilla' || blockchains[i].value == 'gold' || blockchains[i].value == 'littlelambocoin' || blockchains[i].value == 'mint' || blockchains[i].value == 'tad' || blockchains[i].value == 'wheat')) {
                     image_tag = "develop"
                 }
             }
@@ -456,7 +507,7 @@
             </div>
             <div class="row mb-3">
                 <div class="col offset">
-                    <label for="inputState" class="form-label">Operating System</label>
+                    <label for="inputState" class="form-label">Operating System <a href="https://github.com/guydavis/machinaris/wiki/Docker" target="_blank"><i class="fs-4 bi-question-circle text-white"></i></a></label>
                     <div class="row">
                         <div class="col">
                             <input class="form-check-input" type="radio" name="os" id="os-linux" value="linux" checked
@@ -482,7 +533,7 @@
                     </div>
                 </div>
                 <div class="col offset">
-                    <label for="inputState" class="form-label">Initial Blockchain</label>
+                    <label for="inputState" class="form-label">Initial Blockchain <a href="https://github.com/guydavis/machinaris/wiki/Blockchains#blockchain-sync" target="_blank"><i class="fs-4 bi-question-circle text-white"></i></a></label>
                     <div class="row">
                         <div class="col">
                             <input class="form-check-input" type="radio" name="blockchain" id="blockchain-sync" value="sync" checked
@@ -510,8 +561,15 @@
             </div>
             <div class="row mb-3">
                 <div class="col offset">
-                    <label for="inputState" class="form-label">Blockchains to Farm</label>
+                    <label for="inputState" class="form-label">Blockchains to Farm <a href="https://github.com/guydavis/machinaris/wiki/Forks" target="_blank"><i class="fs-4 bi-question-circle text-white"></i></a></label>
                     <div class="row">
+                        <div class="col">
+                            <input class="form-check-input" type="checkbox" name="blockchains"
+                                id="blockchain-apple" onclick="updateDocker()" value="apple">
+                            <label class="form-check-label" for="blockchain-apple">
+                                Apple
+                            </label>
+                        </div>
                         <div class="col">
                             <input class="form-check-input" type="checkbox" name="blockchains"
                                 id="blockchain-bpx" onclick="updateDocker()" value="bpx">
@@ -541,6 +599,15 @@
                                 Chia (Required)
                             </label>
                         </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <input class="form-check-input" type="checkbox" name="blockchains"
+                                id="blockchain-chinilla" onclick="updateDocker()" value="chinilla">
+                            <label class="form-check-label" for="blockchain-chinilla">
+                                Chinilla
+                            </label>
+                        </div>
                         <div class="col">
                             <input class="form-check-input" type="checkbox" name="blockchains"
                                 id="blockchain-chives" onclick="updateDocker()" value="chives">
@@ -555,8 +622,6 @@
                                 CryptoDoge
                             </label>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="col">
                             <input class="form-check-input" type="checkbox" name="blockchains"
                                 id="blockchain-ecostake" onclick="updateDocker()" value="ecostake">
@@ -571,11 +636,20 @@
                                 Flax
                             </label>
                         </div>
+                    </div>
+                    <div class="row">
                         <div class="col">
                             <input class="form-check-input" type="checkbox" name="blockchains"
                                 id="blockchain-flora" onclick="updateDocker()" value="flora">
                             <label class="form-check-label" for="blockchain-flora">
                                 Flora
+                            </label>
+                        </div>
+                        <div class="col">
+                            <input class="form-check-input" type="checkbox" name="blockchains"
+                                id="blockchain-gold" onclick="updateDocker()" value="gold">
+                            <label class="form-check-label" for="blockchain-gold">
+                                Gold
                             </label>
                         </div>
                         <div class="col">
@@ -587,9 +661,25 @@
                         </div>
                         <div class="col">
                             <input class="form-check-input" type="checkbox" name="blockchains"
+                                id="blockchain-littlelambocoin" onclick="updateDocker()" value="littlelambocoin">
+                            <label class="form-check-label" for="blockchain-littlelambocoin">
+                                LittleLamboCoin
+                            </label>
+                        </div>
+                        <div class="col">
+                            <input class="form-check-input" type="checkbox" name="blockchains"
                                 id="blockchain-maize" onclick="updateDocker()" value="maize">
                             <label class="form-check-label" for="blockchain-maize">
                                 Maize
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <input class="form-check-input" type="checkbox" name="blockchains"
+                                id="blockchain-mint" onclick="updateDocker()" value="mint">
+                            <label class="form-check-label" for="blockchain-mint">
+                                Mint
                             </label>
                         </div>
                         <div class="col">
@@ -599,8 +689,6 @@
                                 MMX
                             </label>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="col">
                             <input class="form-check-input" type="checkbox" name="blockchains"
                                 id="blockchain-nchain" onclick="updateDocker()" value="nchain">
@@ -622,6 +710,8 @@
                                 Profit
                             </label>
                         </div>
+                    </div>
+                    <div class="row">
                         <div class="col">
                             <input class="form-check-input" type="checkbox" name="blockchains"
                                 id="blockchain-shibgreen" onclick="updateDocker()" value="shibgreen">
@@ -643,11 +733,25 @@
                                 Stor
                             </label>
                         </div>
+                        <div class="col">
+                            <input class="form-check-input" type="checkbox" name="blockchains"
+                                id="blockchain-tad" onclick="updateDocker()" value="tad">
+                            <label class="form-check-label" for="blockchain-tad">
+                                Tad
+                            </label>
+                        </div>
+                        <div class="col">
+                            <input class="form-check-input" type="checkbox" name="blockchains"
+                                id="blockchain-wheat" onclick="updateDocker()" value="wheat">
+                            <label class="form-check-label" for="blockchain-wheat">
+                                Wheat
+                            </label>
+                        </div>
                         <!--div class="col">&nbsp;</div-->
                     </div>
                 </div>
             </div>
-            <h4>Volume Mounts</h4>
+            <h4>Volume Mounts <a href="https://github.com/guydavis/machinaris/wiki/FAQ#can-i-use-two-or-more-final-destination-directories-to-hold-my-plots" target="_blank"><i class="fs-4 bi-question-circle text-white"></i></a></h4>
             <p style="display:none" id="windows_volume_mount_warning">NOTE: Please indicate whether the volume is a LOCAL drive or a REMOTE share. For remote shares, please save your credentials as per the <a href="https://github.com/guydavis/machinaris/wiki/Windows#network-share-access" target="_blank">wiki.</a></p>
             <div class="row mb-3" id="volumes">
                 <div class="row mb-3 volume">
