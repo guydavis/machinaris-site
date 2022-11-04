@@ -214,6 +214,9 @@
             if (blockchain == "mmx") { 
                 return [ 12336, 11330 ]; 
             }
+            if (blockchain == "moon") { 
+                return [ 26888, 26882 ]; 
+            }
             if (blockchain == "nchain") { 
                 return [ 58445, 38447 ];
             }
@@ -288,13 +291,16 @@
                 return 8946;
             }
             if (blockchain == 'maize') {
-                return 8933;
+                return 8953;
             }
             if (blockchain == 'mint') {
                 return 8950;
             }
             if (blockchain == 'mmx') {
                 return 8940;
+            }
+            if (blockchain == 'moon') {
+                return 8953;
             }
             if (blockchain == 'nchain') {
                 return 8929;
@@ -342,7 +348,7 @@
                 {
                     image_tag = "test"
                 }
-                if (blockchains[i].checked && (blockchains[i].value == 'f1' || blockchains[i].value == 'f2' || blockchains[i].value == 'f3' || blockchains[i].value == 'f4' || blockchains[i].value == 'f5' || blockchains[i].value == 'f6' || blockchains[i].value == 'f7')) {
+                if (blockchains[i].checked && (blockchains[i].value == 'moon' || blockchains[i].value == 'f2' || blockchains[i].value == 'f3' || blockchains[i].value == 'f4' || blockchains[i].value == 'f5' || blockchains[i].value == 'f6' || blockchains[i].value == 'f7')) {
                     image_tag = "develop"
                 }
             }
@@ -691,6 +697,13 @@
                         </div>
                         <div class="col">
                             <input class="form-check-input" type="checkbox" name="blockchains"
+                                id="blockchain-moon" onclick="updateDocker()" value="moon">
+                            <label class="form-check-label" for="blockchain-moon">
+                                Moon
+                            </label>
+                        </div>
+                        <div class="col">
+                            <input class="form-check-input" type="checkbox" name="blockchains"
                                 id="blockchain-nchain" onclick="updateDocker()" value="nchain">
                             <label class="form-check-label" for="blockchain-nchain">
                                 N-Chain
@@ -703,6 +716,8 @@
                                 Petroleum
                             </label>
                         </div>
+                    </div>
+                    <div class="row">
                         <div class="col">
                             <input class="form-check-input" type="checkbox" name="blockchains"
                                 id="blockchain-profit" onclick="updateDocker()" value="profit">
@@ -710,8 +725,6 @@
                                 Profit
                             </label>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="col">
                             <input class="form-check-input" type="checkbox" name="blockchains"
                                 id="blockchain-shibgreen" onclick="updateDocker()" value="shibgreen">
@@ -740,6 +753,8 @@
                                 Tad
                             </label>
                         </div>
+                    </div>
+                    <div class="row">
                         <div class="col">
                             <input class="form-check-input" type="checkbox" name="blockchains"
                                 id="blockchain-wheat" onclick="updateDocker()" value="wheat">
@@ -747,7 +762,10 @@
                                 Wheat
                             </label>
                         </div>
-                        <!--div class="col">&nbsp;</div-->
+                        <div class="col">&nbsp;</div>
+                        <div class="col">&nbsp;</div>
+                        <div class="col">&nbsp;</div>
+                        <div class="col">&nbsp;</div>
                     </div>
                 </div>
             </div>
