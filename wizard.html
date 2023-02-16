@@ -1,1001 +1,1001 @@
-<!doctype html>
-<html lang="en">
+    <!doctype html>
+    <html lang="en">
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-    <title>Controller Launch</title>
-    <style>
-        body {
-            background-color: #15171a;
-            color: #c7c7c7;
-        }
-
-        pre {
-            font-size: 1em !important;
-        }
-
-        .rounded-2 {
-            border-radius: .5rem !important;
-            background-color: #212529 !important;
-            -webkit-box-shadow: 0px 1px 0px 0px #000;
-            box-shadow: 0px 1px 0px 0px #000;
-            border: 0 !important;
-            margin: 10px;
-            padding: 10px;
-            padding-top: 20px;
-        }
-
-        .rounded-3 {
-            border-radius: .5rem !important;
-            background-color: #212529 !important;
-            -webkit-box-shadow: 0px 1px 0px 0px #000;
-            box-shadow: 0px 1px 0px 0px #000;
-            border: 0 !important;
-            margin: 10px;
-            padding: 10px;
-            padding-top: 20px;
-            overflow-y: auto;
-        }
-    </style>
-    <script>
-        function volumeAdd() {
-            var cur_vols = $('#volumes').children().length
-            var new_vol_row = `<div class="row mb-3 volume">
-                    <div class="col-md">
-                        <label for="volume_host_path0" class="form-label">Host Path</label>
-                        <input type="text" class="form-control" placeholder="/mnt/disk1" onkeyup="updateDocker()"
-                            name="volume_host_path" id="volume_host_path0" aria-label="volume_host_path0">
-                    </div>
-                    <div class="col-sm">
-                        <label for="volume_container_path0" class="form-label">Container Path</label>
-                        <input type="text" class="form-control" placeholder="/plots" onkeyup="updateDocker()" 
-                            name="volume_container_path" id="volume_container_path0" aria-label="volume_container_path0">
-                    </div>
-                    <div class="col-auto">
-                        <label for="volume_type0" class="form-label">Used for:</label>
-                        <select class="form-select" id="volume_type0" name="volume_type" aria-label="volume_type0"
-                            onchange="updateDocker()">
-                            <option value="plots" selected>Final Plots</option>
-                            <option value="plotting">Plotting Temp</option>
-                            <option value="other">Other</option>
-                          </select>
-                    </div>
-                    <div class="col-auto volume_location" style="display:none">
-                        <label for="volume_location0" class="form-label">Location</label>
-                        <select class="form-select" id="volume_location0" name="volume_location" aria-label="volume_location0"
-                            onchange="updateDocker()">
-                            <option value="local" selected>Local</option>
-                            <option value="remote">Remote</option>
-                        </select>
-                    </div>
-                </div>`;
-            new_vol_row = new_vol_row.replaceAll('0', cur_vols);
-            var os = getRadioButtonValue('os');
-            if (os == 'windows') {
-                new_vol_row = new_vol_row.replaceAll('style="display:none"', '');
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet"
+            integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+        <title>Controller Launch</title>
+        <style>
+            body {
+                background-color: #15171a;
+                color: #c7c7c7;
             }
-            $('#volumes').append(new_vol_row);
-            setTimeout(updateDocker, 1000);
-        }
-        function volumeRemove() {
-            $('.volume').last().remove()
-            setTimeout(updateDocker, 1000);
-        }
-        function getRadioButtonValue(name) {
-            var radios = document.getElementsByName(name);
-            for (var i = 0, length = radios.length; i < length; i++) {
-                if (radios[i].checked) {
-                    return radios[i].value
+
+            pre {
+                font-size: 1em !important;
+            }
+
+            .rounded-2 {
+                border-radius: .5rem !important;
+                background-color: #212529 !important;
+                -webkit-box-shadow: 0px 1px 0px 0px #000;
+                box-shadow: 0px 1px 0px 0px #000;
+                border: 0 !important;
+                margin: 10px;
+                padding: 10px;
+                padding-top: 20px;
+            }
+
+            .rounded-3 {
+                border-radius: .5rem !important;
+                background-color: #212529 !important;
+                -webkit-box-shadow: 0px 1px 0px 0px #000;
+                box-shadow: 0px 1px 0px 0px #000;
+                border: 0 !important;
+                margin: 10px;
+                padding: 10px;
+                padding-top: 20px;
+                overflow-y: auto;
+            }
+        </style>
+        <script>
+            function volumeAdd() {
+                var cur_vols = $('#volumes').children().length
+                var new_vol_row = `<div class="row mb-3 volume">
+                        <div class="col-md">
+                            <label for="volume_host_path0" class="form-label">Host Path</label>
+                            <input type="text" class="form-control" placeholder="/mnt/disk1" onkeyup="updateDocker()"
+                                name="volume_host_path" id="volume_host_path0" aria-label="volume_host_path0">
+                        </div>
+                        <div class="col-sm">
+                            <label for="volume_container_path0" class="form-label">Container Path</label>
+                            <input type="text" class="form-control" placeholder="/plots" onkeyup="updateDocker()" 
+                                name="volume_container_path" id="volume_container_path0" aria-label="volume_container_path0">
+                        </div>
+                        <div class="col-auto">
+                            <label for="volume_type0" class="form-label">Used for:</label>
+                            <select class="form-select" id="volume_type0" name="volume_type" aria-label="volume_type0"
+                                onchange="updateDocker()">
+                                <option value="plots" selected>Final Plots</option>
+                                <option value="plotting">Plotting Temp</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-auto volume_location" style="display:none">
+                            <label for="volume_location0" class="form-label">Location</label>
+                            <select class="form-select" id="volume_location0" name="volume_location" aria-label="volume_location0"
+                                onchange="updateDocker()">
+                                <option value="local" selected>Local</option>
+                                <option value="remote">Remote</option>
+                            </select>
+                        </div>
+                    </div>`;
+                new_vol_row = new_vol_row.replaceAll('0', cur_vols);
+                var os = getRadioButtonValue('os');
+                if (os == 'windows') {
+                    new_vol_row = new_vol_row.replaceAll('style="display:none"', '');
+                }
+                $('#volumes').append(new_vol_row);
+                setTimeout(updateDocker, 1000);
+            }
+            function volumeRemove() {
+                $('.volume').last().remove()
+                setTimeout(updateDocker, 1000);
+            }
+            function getRadioButtonValue(name) {
+                var radios = document.getElementsByName(name);
+                for (var i = 0, length = radios.length; i < length; i++) {
+                    if (radios[i].checked) {
+                        return radios[i].value
+                    }
                 }
             }
-        }
-        function updateVolumes() {
-            var os = getRadioButtonValue('os')
-            if (os == 'windows') {
-                document.getElementById('volume_host_path0').placeholder = "C:/my_chia_plots or //192.168.1.100/myshare";
-                document.getElementById('volume_host_path1').placeholder = "C:/my_chia_plotting";
-                $('#windows_volume_mount_warning').show();
-                $('.volume_location').show();
-            } else if (os == 'macintosh') {
-                document.getElementById('volume_host_path0').placeholder = "/Volumes/disk1";
-                document.getElementById('volume_host_path1').placeholder = "/Volumes/temp1";
-                $('#windows_volume_mount_warning').hide();
-                $('.volume_location').hide();
-            } else {
-                document.getElementById('volume_host_path0').placeholder = "/mnt/disk1";
-                document.getElementById('volume_host_path1').placeholder = "/mnt/temp1";
-                $('#windows_volume_mount_warning').hide();
-                $('.volume_location').hide();
-            }
-        }
-        function checkForWarnings() {
-            warnings = [];
-            var blockchain_action = getRadioButtonValue('blockchain');
-            var blockchains = document.getElementsByName('blockchains');
-            var blockchains_selected = 0;
-            for(var i = 0; i < blockchains.length; ++i) {
-                if (blockchains[i].checked) {
-                    blockchains_selected += 1;
-                }
-            }
-            if (blockchain_action == 'download') {
-                warnings.push("You have choosen to download a blockchain database if available and <b>acknowledge the inherent risks</b>.  Please see the Machinaris <a href='https://github.com/guydavis/machinaris/wiki/Blockchains#blockchain-download' target='_blanks'>wiki for details</a>.");
-            } else if (blockchain_action == 'import') {
-                warnings.push("You have choosen to manually import your own blockchain database.  Please see the Machinaris <a href='https://github.com/guydavis/machinaris/wiki/Blockchains#blockchain-import' target='_blanks'>wiki for details</a>.");
-            } else if (blockchains_selected >= 5) { // Chia not counted for some reason
-                warnings.push("You have choosen more than five blockchains to launch at once. During initial sync, each blockchain uses more computer resources.  As such, please add blockchains in batches of five at a time, until each batch is fully synced.  This guidance can be lifted for high performance machines.");
-            }
-            return warnings;
-        }
-        function updateDocker() {
-            var errors = [];
-            compose = updateDockerCompose(errors);
-            if (errors.length > 0) {
-                msg = "<b>Please complete the following to generate your docker-compose.yml contents:</b><ul style='margin-bottom:0'>";
-                for (let i = 0; i < errors.length; i++) {
-                    msg += "<li>" + errors[i] + "</li>";
-                }
-                msg += "</ul>";
-                $('#errors').html(msg);
-                $('#errors').show();
-                $('#compose').html('');
-            } else {
-                $('#compose').html(compose);
-                $('#errors').hide();
-            }
-            var warnings = checkForWarnings();
-            if (warnings.length > 0) {
-                msg = "<b>Please note the following important warnings:</b><ul style='margin-bottom:0'>";
-                for (let i = 0; i < warnings.length; i++) {
-                    msg += "<li>" + warnings[i] + "</li>";
-                }
-                msg += "</ul>";
-                $('#warnings').html(msg);
-                $('#warnings').show();
-            } else {
-                $('#warnings').hide();
-            }
-        }
-        function get_fork_farmer_ports(blockchain) {
-            if (blockchain == "apple") { 
-                return [ 26666, 26667 ]; 
-            }
-            if (blockchain == "ballcoin") { 
-                return [ 38888, 38891 ]; 
-            }
-            if (blockchain == "bpx") { 
-                return [ 27911, 27914 ]; 
-            }
-            if (blockchain == "btcgreen") { 
-                return [ 9282, 18655 ]; 
-            }
-            if (blockchain == "cactus") { 
-                return [ 11444, 11447 ]; 
-            }
-            if (blockchain == "chia") { 
-                return [ 8444, 8447 ];
-            }
-            if (blockchain == "chinilla") { 
-                return [ 43444, 43447 ];
-            }
-            if (blockchain == "chives") { 
-                return [ 9699, 9647 ]; 
-            }
-            if (blockchain == "coffee") { 
-                return [ 33844, 33847 ];
-            }
-            if (blockchain == "cryptodoge") { 
-                return [ 15994, 16895 ];
-            }
-            if (blockchain == "ecostake") { 
-                return [ 38444, 38441 ];
-            }
-            if (blockchain == "flax") { 
-                return [ 6888, 6885 ];
-            }
-            if (blockchain == "flora") { 
-                return [ 18644, 18647 ];
-            }
-            if (blockchain == "gigahorse") { 
-                return [ 28744, 28745 ];
-            }
-            if (blockchain == "gold") { 
-                return [ 14444, 14447 ]; 
-            }
-            if (blockchain == "greenbtc") { 
-                return [ 23333, 23332 ];
-            }
-            if (blockchain == "hddcoin") { 
-                return [ 28444, 28447 ]; 
-            }
-            if (blockchain == "littlelambocoin") { 
-                return [ 4575, 18981 ]; 
-            }
-            if (blockchain == "maize") { 
-                return [ 8644, 8647 ]; 
-            }
-            if (blockchain == "mint") { 
-                return [ 29222, 29227 ]; 
-            }
-            if (blockchain == "mmx") { 
-                return [ 12339, 11330 ]; 
-            }
-            if (blockchain == "moon") { 
-                return [ 26888, 26882 ]; 
-            }
-            if (blockchain == "nchain") { 
-                return [ 58445, 38447 ];
-            }
-            if (blockchain == "one") { 
-                return [ 11111, 11113 ];
-            }
-            if (blockchain == "petroleum") { 
-                return [ 33344, 33347 ]; 
-            }
-            if (blockchain == "pipscoin") { 
-                return [ 7477, 16339 ]; 
-            }
-            if (blockchain == "profit") { 
-                return [ 48444, 48447 ]; 
-            }
-            if (blockchain == "shibgreen") { 
-                return [ 7442, 18974 ]; 
-            }
-            if (blockchain == "silicoin") { 
-                return [ 22222, 22447 ]; 
-            }
-            if (blockchain == "staicoin") { 
-                return [ 1999, 1692 ]; 
-            }
-            if (blockchain == "stor") { 
-                return [ 8668, 8337 ]; 
-            }
-            if (blockchain == "tad") { 
-                return [ 4044, 4447 ]; 
-            }
-            if (blockchain == "wheat") { 
-                return [ 21333, 21447 ]; 
-            }
-            console.log("Unable to find farmer ports for fork: " + blockchain);
-        }
-
-        function lookup_worker_port(blockchain) {
-            if (blockchain == 'apple') {
-                return 8947;
-            }
-            if (blockchain == 'ballcoin') {
-                return 8957;
-            }
-            if (blockchain == 'bpx') {
-                return 8945;
-            }
-            if (blockchain == 'btcgreen') {
-                return 8938;
-            }
-            if (blockchain == 'cactus') {
-                return 8936;
-            }
-            if (blockchain == 'chia') {
-                return 8927;
-            }
-            if (blockchain == 'chinilla') {
-                return 8948;
-            }
-            if (blockchain == 'chives') {
-                return 8931;
-            }
-            if (blockchain == 'coffee') {
-                return 8954;
-            }
-            if (blockchain == 'cryptodoge') {
-                return 8937;
-            }
-            if (blockchain == 'ecostake') {
-                return 8942;
-            }
-            if (blockchain == 'flax') {
-                return 8928;
-            }
-            if (blockchain == 'flora') {
-                return 8932;
-            }
-            if (blockchain == 'gigahorse') {
-                return 8959;
-            }
-            if (blockchain == 'gold') {
-                return 8949;
-            }            
-            if (blockchain == 'greenbtc') {
-                return 8955;
-            }
-            if (blockchain == 'hddcoin') {
-                return 8930;
-            }
-            if (blockchain == 'littlelambocoin') {
-                return 8946;
-            }
-            if (blockchain == 'maize') {
-                return 8933;
-            }
-            if (blockchain == 'mint') {
-                return 8950;
-            }
-            if (blockchain == 'mmx') {
-                return 8940;
-            }
-            if (blockchain == 'moon') {
-                return 8953;
-            }
-            if (blockchain == 'nchain') {
-                return 8929;
-            }
-            if (blockchain == 'one') {
-                return 8956;
-            }
-            if (blockchain == 'petroleum') {
-                return 8943;
-            }
-            if (blockchain == 'pipscoin') {
-                return 8958;
-            }
-            if (blockchain == 'profit') {
-                return 8944;
-            }
-            if (blockchain == 'shibgreen') {
-                return 8939;
-            }
-            if (blockchain == 'silicoin') {
-                return 8941;
-            }
-            if (blockchain == 'staicoin') {
-                return 8934;
-            }
-            if (blockchain == 'stor') {
-                return 8935;
-            }
-            if (blockchain == 'tad') {
-                return 8951;
-            }
-            if (blockchain == 'wheat') {
-                return 8952;
-            }
-        }
-
-        function updateDockerCompose(errors) {
-            var line_end = ' \n';
-            var os = getRadioButtonValue('os');
-            var blockchain_action = getRadioButtonValue('blockchain');
-            var blockchains = document.getElementsByName('blockchains');
-            var image_tag = "latest"
-            //if (blockchain_action == "download") {
-            //    image_tag = "latest"
-            //}
-            for(var i = 0; i < blockchains.length; ++i) {
-                if ((image_tag == "latest") && blockchains[i].checked && 
-                    (
-                        (blockchains[i].value == 'ballcoin') || (blockchains[i].value == 'pipscoin') || (blockchains[i].value == 'buz')
-                    )) 
-                {
-                    image_tag = "test"
-                }
-                if (blockchains[i].checked && (blockchains[i].value == 'gigahorse' || blockchains[i].value == 'f2')) {
-                    image_tag = "develop"
-                }
-            }
-            cmd = "version: '3.7'" + line_end;
-            cmd += "services:" + line_end;
-            // First - primary container is Chia-only
-            cmd += "    machinaris:" + line_end;
-            cmd += "        image: ghcr.io/guydavis/machinaris:" + image_tag + line_end;
-            cmd += "        container_name: machinaris" + line_end;
-            if (document.getElementById("hostname").value) {
-                cmd += '        hostname: ' + document.getElementById("hostname").value + line_end;
-            }
-            else {
-                errors.push("Missing controller hostname.  Please provide a short name to identify your machine.");
-            }
-            if (!document.getElementById("controller_ip_addr").value) {
-                errors.push("Missing controller IP address.  Please provide IP address for workers to contact controller.");
-            }
-            cmd += '        restart: always' + line_end;
-            cmd += '        volumes:' + line_end;
-            cmd += '            - ~/.machinaris:/root/.chia' + line_end;
-            var cur_vols = $('#volumes').children().length
-            var plots_dir = []
-            var remote_windows_shares = [];
-            $('#volumes').children().each((index, element) => {
-                volume_host_path = document.getElementById("volume_host_path" + index).value;
-                volume_container_path = document.getElementById("volume_container_path" + index).value;
-                if (os == 'windows' && ($('#volume_location' + index).val() == 'remote')) {
-                    remote_windows_shares.push(volume_host_path + ':' + volume_container_path);
+            function updateVolumes() {
+                var os = getRadioButtonValue('os')
+                if (os == 'windows') {
+                    document.getElementById('volume_host_path0').placeholder = "C:/my_chia_plots or //192.168.1.100/myshare";
+                    document.getElementById('volume_host_path1').placeholder = "C:/my_chia_plotting";
+                    $('#windows_volume_mount_warning').show();
+                    $('.volume_location').show();
+                } else if (os == 'macintosh') {
+                    document.getElementById('volume_host_path0').placeholder = "/Volumes/disk1";
+                    document.getElementById('volume_host_path1').placeholder = "/Volumes/temp1";
+                    $('#windows_volume_mount_warning').hide();
+                    $('.volume_location').hide();
                 } else {
-                    if (volume_host_path.endsWith(':')) {
-                        errors.push("Invalid host path ending with colon. Try adding a slash to the end like this " + volume_host_path + '/');
-                    } 
-                    if (!volume_host_path) {
-                        errors.push("Empty host path provided for volume at '" + volume_container_path + "'. Please provide a host path.");
-                    } else if (!volume_container_path) {
-                        errors.push("Empty container path provided for volume at '" + volume_host_path + "'. Please provide a container path.");
+                    document.getElementById('volume_host_path0').placeholder = "/mnt/disk1";
+                    document.getElementById('volume_host_path1').placeholder = "/mnt/temp1";
+                    $('#windows_volume_mount_warning').hide();
+                    $('.volume_location').hide();
+                }
+            }
+            function checkForWarnings() {
+                warnings = [];
+                var blockchain_action = getRadioButtonValue('blockchain');
+                var blockchains = document.getElementsByName('blockchains');
+                var blockchains_selected = 0;
+                for(var i = 0; i < blockchains.length; ++i) {
+                    if (blockchains[i].checked) {
+                        blockchains_selected += 1;
                     }
-                    cmd += '            - "' + volume_host_path + ':' + volume_container_path + '"' + line_end;
                 }
-                if ($('#volume_type' + index).val() == 'plots') {
-                    plots_dir.push(volume_container_path)
+                if (blockchain_action == 'download') {
+                    warnings.push("You have choosen to download a blockchain database if available and <b>acknowledge the inherent risks</b>.  Please see the Machinaris <a href='https://github.com/guydavis/machinaris/wiki/Blockchains#blockchain-download' target='_blanks'>wiki for details</a>.");
+                } else if (blockchain_action == 'import') {
+                    warnings.push("You have choosen to manually import your own blockchain database.  Please see the Machinaris <a href='https://github.com/guydavis/machinaris/wiki/Blockchains#blockchain-import' target='_blanks'>wiki for details</a>.");
+                } else if (blockchains_selected >= 5) { // Chia not counted for some reason
+                    warnings.push("You have choosen more than five blockchains to launch at once. During initial sync, each blockchain uses more computer resources.  As such, please add blockchains in batches of five at a time, until each batch is fully synced.  This guidance can be lifted for high performance machines.");
                 }
-            });
-            cmd += '        environment:' + line_end;
-            cmd += '            - TZ=' + Intl.DateTimeFormat().resolvedOptions().timeZone + line_end;
-            cmd += '            - mode=fullnode' + line_end;
-            cmd += '            - worker_address=' + document.getElementById("controller_ip_addr").value + line_end;
-            cmd += '            - plots_dir=' + plots_dir.join(':') + line_end;
-            cmd += '            - blockchains=chia' + line_end;
-            if (blockchain_action == "download") {
-                cmd += '            - blockchain_db_download=true' + line_end;
+                return warnings;
             }
-            if (remote_windows_shares.length > 0) {
-                cmd += '            - remote_shares=' + remote_windows_shares.join() + line_end;
+            function updateDocker() {
+                var errors = [];
+                compose = updateDockerCompose(errors);
+                if (errors.length > 0) {
+                    msg = "<b>Please complete the following to generate your docker-compose.yml contents:</b><ul style='margin-bottom:0'>";
+                    for (let i = 0; i < errors.length; i++) {
+                        msg += "<li>" + errors[i] + "</li>";
+                    }
+                    msg += "</ul>";
+                    $('#errors').html(msg);
+                    $('#errors').show();
+                    $('#compose').html('');
+                } else {
+                    $('#compose').html(compose);
+                    $('#errors').hide();
+                }
+                var warnings = checkForWarnings();
+                if (warnings.length > 0) {
+                    msg = "<b>Please note the following important warnings:</b><ul style='margin-bottom:0'>";
+                    for (let i = 0; i < warnings.length; i++) {
+                        msg += "<li>" + warnings[i] + "</li>";
+                    }
+                    msg += "</ul>";
+                    $('#warnings').html(msg);
+                    $('#warnings').show();
+                } else {
+                    $('#warnings').hide();
+                }
             }
-            cmd += '        ports:' + line_end;
-            cmd += '            - 8926:8926' + line_end;
-            cmd += '            - 8927:8927' + line_end;
-            cmd += '            - 8444:8444' + line_end;
-            cmd += '            - 8447:8447' + line_end;
-            if (remote_windows_shares.length > 0) {
-                cmd += '        cap_add:' + line_end;
-                cmd += '            - SYS_ADMIN' + line_end;
-                cmd += '            - DAC_READ_SEARCH' + line_end;
+            function get_fork_farmer_ports(blockchain) {
+                if (blockchain == "apple") { 
+                    return [ 26666, 26667 ]; 
+                }
+                if (blockchain == "ballcoin") { 
+                    return [ 38888, 38891 ]; 
+                }
+                if (blockchain == "bpx") { 
+                    return [ 27911, 27914 ]; 
+                }
+                if (blockchain == "btcgreen") { 
+                    return [ 9282, 18655 ]; 
+                }
+                if (blockchain == "cactus") { 
+                    return [ 11444, 11447 ]; 
+                }
+                if (blockchain == "chia") { 
+                    return [ 8444, 8447 ];
+                }
+                if (blockchain == "chinilla") { 
+                    return [ 43444, 43447 ];
+                }
+                if (blockchain == "chives") { 
+                    return [ 9699, 9647 ]; 
+                }
+                if (blockchain == "coffee") { 
+                    return [ 33844, 33847 ];
+                }
+                if (blockchain == "cryptodoge") { 
+                    return [ 15994, 16895 ];
+                }
+                if (blockchain == "ecostake") { 
+                    return [ 38444, 38441 ];
+                }
+                if (blockchain == "flax") { 
+                    return [ 6888, 6885 ];
+                }
+                if (blockchain == "flora") { 
+                    return [ 18644, 18647 ];
+                }
+                if (blockchain == "gigahorse") { 
+                    return [ 28744, 28745 ];
+                }
+                if (blockchain == "gold") { 
+                    return [ 14444, 14447 ]; 
+                }
+                if (blockchain == "greenbtc") { 
+                    return [ 23333, 23332 ];
+                }
+                if (blockchain == "hddcoin") { 
+                    return [ 28444, 28447 ]; 
+                }
+                if (blockchain == "littlelambocoin") { 
+                    return [ 4575, 18981 ]; 
+                }
+                if (blockchain == "maize") { 
+                    return [ 8644, 8647 ]; 
+                }
+                if (blockchain == "mint") { 
+                    return [ 29222, 29227 ]; 
+                }
+                if (blockchain == "mmx") { 
+                    return [ 12339, 11330 ]; 
+                }
+                if (blockchain == "moon") { 
+                    return [ 26888, 26882 ]; 
+                }
+                if (blockchain == "nchain") { 
+                    return [ 58445, 38447 ];
+                }
+                if (blockchain == "one") { 
+                    return [ 11111, 11113 ];
+                }
+                if (blockchain == "petroleum") { 
+                    return [ 33344, 33347 ]; 
+                }
+                if (blockchain == "pipscoin") { 
+                    return [ 7477, 16339 ]; 
+                }
+                if (blockchain == "profit") { 
+                    return [ 48444, 48447 ]; 
+                }
+                if (blockchain == "shibgreen") { 
+                    return [ 7442, 18974 ]; 
+                }
+                if (blockchain == "silicoin") { 
+                    return [ 22222, 22447 ]; 
+                }
+                if (blockchain == "staicoin") { 
+                    return [ 1999, 1692 ]; 
+                }
+                if (blockchain == "stor") { 
+                    return [ 8668, 8337 ]; 
+                }
+                if (blockchain == "tad") { 
+                    return [ 4044, 4447 ]; 
+                }
+                if (blockchain == "wheat") { 
+                    return [ 21333, 21447 ]; 
+                }
+                console.log("Unable to find farmer ports for fork: " + blockchain);
             }
-            cmd += line_end;
 
-            // Next, launch a fullnode for each selected fork
-            var blockchains = document.getElementsByName('blockchains');
-            for(var i = 0; i < blockchains.length; ++i) {
-                if (blockchains[i].checked) {
-                    var blockchain = blockchains[i].value
-                    cmd += "    machinaris-" + blockchain + ":" + line_end;
-                    cmd += "        image: ghcr.io/guydavis/machinaris-" + blockchain + ':' + image_tag + line_end;
-                    cmd += "        container_name: machinaris-" + blockchain + line_end;
-                    if (document.getElementById("hostname").value) {
-                        cmd += '        hostname: ' + document.getElementById("hostname").value + line_end;
+            function lookup_worker_port(blockchain) {
+                if (blockchain == 'apple') {
+                    return 8947;
+                }
+                if (blockchain == 'ballcoin') {
+                    return 8957;
+                }
+                if (blockchain == 'bpx') {
+                    return 8945;
+                }
+                if (blockchain == 'btcgreen') {
+                    return 8938;
+                }
+                if (blockchain == 'cactus') {
+                    return 8936;
+                }
+                if (blockchain == 'chia') {
+                    return 8927;
+                }
+                if (blockchain == 'chinilla') {
+                    return 8948;
+                }
+                if (blockchain == 'chives') {
+                    return 8931;
+                }
+                if (blockchain == 'coffee') {
+                    return 8954;
+                }
+                if (blockchain == 'cryptodoge') {
+                    return 8937;
+                }
+                if (blockchain == 'ecostake') {
+                    return 8942;
+                }
+                if (blockchain == 'flax') {
+                    return 8928;
+                }
+                if (blockchain == 'flora') {
+                    return 8932;
+                }
+                if (blockchain == 'gigahorse') {
+                    return 8959;
+                }
+                if (blockchain == 'gold') {
+                    return 8949;
+                }            
+                if (blockchain == 'greenbtc') {
+                    return 8955;
+                }
+                if (blockchain == 'hddcoin') {
+                    return 8930;
+                }
+                if (blockchain == 'littlelambocoin') {
+                    return 8946;
+                }
+                if (blockchain == 'maize') {
+                    return 8933;
+                }
+                if (blockchain == 'mint') {
+                    return 8950;
+                }
+                if (blockchain == 'mmx') {
+                    return 8940;
+                }
+                if (blockchain == 'moon') {
+                    return 8953;
+                }
+                if (blockchain == 'nchain') {
+                    return 8929;
+                }
+                if (blockchain == 'one') {
+                    return 8956;
+                }
+                if (blockchain == 'petroleum') {
+                    return 8943;
+                }
+                if (blockchain == 'pipscoin') {
+                    return 8958;
+                }
+                if (blockchain == 'profit') {
+                    return 8944;
+                }
+                if (blockchain == 'shibgreen') {
+                    return 8939;
+                }
+                if (blockchain == 'silicoin') {
+                    return 8941;
+                }
+                if (blockchain == 'staicoin') {
+                    return 8934;
+                }
+                if (blockchain == 'stor') {
+                    return 8935;
+                }
+                if (blockchain == 'tad') {
+                    return 8951;
+                }
+                if (blockchain == 'wheat') {
+                    return 8952;
+                }
+            }
+
+            function updateDockerCompose(errors) {
+                var line_end = ' \n';
+                var os = getRadioButtonValue('os');
+                var blockchain_action = getRadioButtonValue('blockchain');
+                var blockchains = document.getElementsByName('blockchains');
+                var image_tag = "latest"
+                //if (blockchain_action == "download") {
+                //    image_tag = "latest"
+                //}
+                for(var i = 0; i < blockchains.length; ++i) {
+                    if ((image_tag == "latest") && blockchains[i].checked && 
+                        (
+                            (blockchains[i].value == 'foo') || (blockchains[i].value == 'bar') || (blockchains[i].value == 'buz')
+                        )) 
+                    {
+                        image_tag = "test"
                     }
-                    cmd += '        restart: always' + line_end;
-                    cmd += '        volumes:' + line_end;
-                    cmd += '            - ~/.machinaris-' + blockchain + ':/root/.chia' + line_end;
-                    if (blockchain != 'mmx') {
-                        cmd += '            - ~/.machinaris/mnemonic.txt:/root/.chia/mnemonic.txt:ro' + line_end;
+                    if (blockchains[i].checked && (blockchains[i].value == 'f1' || blockchains[i].value == 'f2')) {
+                        image_tag = "develop"
                     }
-                    var cur_vols = $('#volumes').children().length
-                    var plots_dir = []
-                    $('#volumes').children().each((index, element) => {
-                        volume_host_path = document.getElementById("volume_host_path" + index).value;
-                        volume_container_path = document.getElementById("volume_container_path" + index).value;
-                        if ((blockchain == "chives") && ($('#volume_type' + index).val() == 'plots')) {
-                            volume_host_path += '/chives'
-                        }
-                        if ((blockchain == "mmx") && ($('#volume_type' + index).val() == 'plots')) {
-                            volume_host_path += '/mmx'
+                }
+                cmd = "version: '3.7'" + line_end;
+                cmd += "services:" + line_end;
+                // First - primary container is Chia-only
+                cmd += "    machinaris:" + line_end;
+                cmd += "        image: ghcr.io/guydavis/machinaris:" + image_tag + line_end;
+                cmd += "        container_name: machinaris" + line_end;
+                if (document.getElementById("hostname").value) {
+                    cmd += '        hostname: ' + document.getElementById("hostname").value + line_end;
+                }
+                else {
+                    errors.push("Missing controller hostname.  Please provide a short name to identify your machine.");
+                }
+                if (!document.getElementById("controller_ip_addr").value) {
+                    errors.push("Missing controller IP address.  Please provide IP address for workers to contact controller.");
+                }
+                cmd += '        restart: always' + line_end;
+                cmd += '        volumes:' + line_end;
+                cmd += '            - ~/.machinaris:/root/.chia' + line_end;
+                var cur_vols = $('#volumes').children().length
+                var plots_dir = []
+                var remote_windows_shares = [];
+                $('#volumes').children().each((index, element) => {
+                    volume_host_path = document.getElementById("volume_host_path" + index).value;
+                    volume_container_path = document.getElementById("volume_container_path" + index).value;
+                    if (os == 'windows' && ($('#volume_location' + index).val() == 'remote')) {
+                        remote_windows_shares.push(volume_host_path + ':' + volume_container_path);
+                    } else {
+                        if (volume_host_path.endsWith(':')) {
+                            errors.push("Invalid host path ending with colon. Try adding a slash to the end like this " + volume_host_path + '/');
+                        } 
+                        if (!volume_host_path) {
+                            errors.push("Empty host path provided for volume at '" + volume_container_path + "'. Please provide a host path.");
+                        } else if (!volume_container_path) {
+                            errors.push("Empty container path provided for volume at '" + volume_host_path + "'. Please provide a container path.");
                         }
                         cmd += '            - "' + volume_host_path + ':' + volume_container_path + '"' + line_end;
-                        if ($('#volume_type' + index).val() == 'plots') {
-                            plots_dir.push(volume_container_path)
-                        }
-                    });
-                    var worker_port = lookup_worker_port(blockchain);
-                    cmd += '        environment:' + line_end;
-                    cmd += '            - TZ=' + Intl.DateTimeFormat().resolvedOptions().timeZone + line_end;
-                    cmd += '            - mode=fullnode' + line_end;
-                    cmd += '            - controller_host=' + document.getElementById("controller_ip_addr").value + line_end;
-                    cmd += '            - worker_address=' + document.getElementById("controller_ip_addr").value + line_end;
-                    cmd += '            - worker_api_port=' + worker_port + line_end;
-                    cmd += '            - plots_dir=' + plots_dir.join(':') + line_end;
-                    cmd += '            - blockchains=' + blockchain + line_end;
-                    if (blockchain_action == "download") {
-                        cmd += '            - blockchain_db_download=true' + line_end;
                     }
-                    if (remote_windows_shares.length > 0) {
-                        cmd += '            - remote_shares=' + remote_windows_shares.join() + line_end;
+                    if ($('#volume_type' + index).val() == 'plots') {
+                        plots_dir.push(volume_container_path)
                     }
-                    cmd += '        ports:' + line_end;
-                    cmd += '            - ' + worker_port + ':' + worker_port + line_end;
-                    farmer_ports = get_fork_farmer_ports(blockchain);
-                    cmd += '            - ' + farmer_ports[0] + ':' + farmer_ports[0] + line_end;
-                    if (farmer_ports.length == 2) {
-                        cmd += '            - ' + farmer_ports[1] + ':' + farmer_ports[1] + line_end;
-                    }
-                    if (remote_windows_shares.length > 0) {
-                        cmd += '        cap_add:' + line_end;
-                        cmd += '            - SYS_ADMIN' + line_end;
-                        cmd += '            - DAC_READ_SEARCH' + line_end;
-                    }
-                    cmd += '        depends_on:' + line_end;
-                    cmd += '            - machinaris' + line_end;
-                    cmd += line_end;
+                });
+                cmd += '        environment:' + line_end;
+                cmd += '            - TZ=' + Intl.DateTimeFormat().resolvedOptions().timeZone + line_end;
+                cmd += '            - mode=fullnode' + line_end;
+                cmd += '            - worker_address=' + document.getElementById("controller_ip_addr").value + line_end;
+                cmd += '            - plots_dir=' + plots_dir.join(':') + line_end;
+                cmd += '            - blockchains=chia' + line_end;
+                if (blockchain_action == "download") {
+                    cmd += '            - blockchain_db_download=true' + line_end;
                 }
-            }
-            return cmd;
-        }
-        $(document).ready(function () {
-            $('#plotting_keys_row').hide()
-            //$('#farmer_address_row').hide() 
-            $('#farmer_address').val(location.hostname)
-            $('#controller_host').val(location.hostname)
-            updateDocker();
-        });
-    </script>
-</head>
+                if (remote_windows_shares.length > 0) {
+                    cmd += '            - remote_shares=' + remote_windows_shares.join() + line_end;
+                }
+                cmd += '        ports:' + line_end;
+                cmd += '            - 8926:8926' + line_end;
+                cmd += '            - 8927:8927' + line_end;
+                cmd += '            - 8444:8444' + line_end;
+                cmd += '            - 8447:8447' + line_end;
+                if (remote_windows_shares.length > 0) {
+                    cmd += '        cap_add:' + line_end;
+                    cmd += '            - SYS_ADMIN' + line_end;
+                    cmd += '            - DAC_READ_SEARCH' + line_end;
+                }
+                cmd += line_end;
 
-<body>
-    <form>
-        <div class="rounded-2">
-            <div class="alert alert-warning" role="alert" id='errors'></div>
-            <div class="alert alert-secondary" role="alert" id='warnings'></div>
-            <div class="row mb-3">
-                <div class="col offset">
-                    <label for="hostname" class="form-label">Controller Hostname</label>
-                    <input type="text" class="form-control" placeholder="myhostname" aria-label="hostname"
-                        id='hostname' onkeyup="updateDocker()">
-                </div>
-                <div class="col offset">
-                    <label for="controller_ip_addr" class="form-label">Controller IP Address</label>
-                    <input type="text" class="form-control" placeholder="192.168.1.125" aria-label="controller_ip_addr"
-                        id='controller_ip_addr' onkeyup="updateDocker()">
-                </div>
-            </div>
-            <div class="row mb-3">
-                <div class="col offset">
-                    <label for="inputState" class="form-label">Operating System <a href="https://github.com/guydavis/machinaris/wiki/Docker" target="_blank"><i class="fs-4 bi-question-circle text-white"></i></a></label>
-                    <div class="row">
-                        <div class="col">
-                            <input class="form-check-input" type="radio" name="os" id="os-linux" value="linux" checked
-                                onclick="updateVolumes(); updateDocker()">
-                            <label class="form-check-label" for="os-linux">
-                                Linux
-                            </label>
-                        </div>
-                        <div class="col">
-                            <input class="form-check-input" type="radio" name="os" id="os-macintosh" value="macintosh"
-                                onclick="updateVolumes(); updateDocker()">
-                            <label class="form-check-label" for="os-macintosh">
-                                Macintosh
-                            </label>
-                        </div>
-                        <div class="col">
-                            <input class="form-check-input" type="radio" name="os" id="os-windows" value="windows"
-                                onclick="updateVolumes(); updateDocker()">
-                            <label class="form-check-label" for="os-windows">
-                                Windows
-                            </label>
-                        </div>
+                // Next, launch a fullnode for each selected fork
+                var blockchains = document.getElementsByName('blockchains');
+                for(var i = 0; i < blockchains.length; ++i) {
+                    if (blockchains[i].checked) {
+                        var blockchain = blockchains[i].value
+                        cmd += "    machinaris-" + blockchain + ":" + line_end;
+                        cmd += "        image: ghcr.io/guydavis/machinaris-" + blockchain + ':' + image_tag + line_end;
+                        cmd += "        container_name: machinaris-" + blockchain + line_end;
+                        if (document.getElementById("hostname").value) {
+                            cmd += '        hostname: ' + document.getElementById("hostname").value + line_end;
+                        }
+                        cmd += '        restart: always' + line_end;
+                        cmd += '        volumes:' + line_end;
+                        cmd += '            - ~/.machinaris-' + blockchain + ':/root/.chia' + line_end;
+                        if (blockchain != 'mmx') {
+                            cmd += '            - ~/.machinaris/mnemonic.txt:/root/.chia/mnemonic.txt:ro' + line_end;
+                        }
+                        var cur_vols = $('#volumes').children().length
+                        var plots_dir = []
+                        $('#volumes').children().each((index, element) => {
+                            volume_host_path = document.getElementById("volume_host_path" + index).value;
+                            volume_container_path = document.getElementById("volume_container_path" + index).value;
+                            if ((blockchain == "chives") && ($('#volume_type' + index).val() == 'plots')) {
+                                volume_host_path += '/chives'
+                            }
+                            if ((blockchain == "mmx") && ($('#volume_type' + index).val() == 'plots')) {
+                                volume_host_path += '/mmx'
+                            }
+                            cmd += '            - "' + volume_host_path + ':' + volume_container_path + '"' + line_end;
+                            if ($('#volume_type' + index).val() == 'plots') {
+                                plots_dir.push(volume_container_path)
+                            }
+                        });
+                        var worker_port = lookup_worker_port(blockchain);
+                        cmd += '        environment:' + line_end;
+                        cmd += '            - TZ=' + Intl.DateTimeFormat().resolvedOptions().timeZone + line_end;
+                        cmd += '            - mode=fullnode' + line_end;
+                        cmd += '            - controller_host=' + document.getElementById("controller_ip_addr").value + line_end;
+                        cmd += '            - worker_address=' + document.getElementById("controller_ip_addr").value + line_end;
+                        cmd += '            - worker_api_port=' + worker_port + line_end;
+                        cmd += '            - plots_dir=' + plots_dir.join(':') + line_end;
+                        cmd += '            - blockchains=' + blockchain + line_end;
+                        if (blockchain_action == "download") {
+                            cmd += '            - blockchain_db_download=true' + line_end;
+                        }
+                        if (remote_windows_shares.length > 0) {
+                            cmd += '            - remote_shares=' + remote_windows_shares.join() + line_end;
+                        }
+                        cmd += '        ports:' + line_end;
+                        cmd += '            - ' + worker_port + ':' + worker_port + line_end;
+                        farmer_ports = get_fork_farmer_ports(blockchain);
+                        cmd += '            - ' + farmer_ports[0] + ':' + farmer_ports[0] + line_end;
+                        if (farmer_ports.length == 2) {
+                            cmd += '            - ' + farmer_ports[1] + ':' + farmer_ports[1] + line_end;
+                        }
+                        if (remote_windows_shares.length > 0) {
+                            cmd += '        cap_add:' + line_end;
+                            cmd += '            - SYS_ADMIN' + line_end;
+                            cmd += '            - DAC_READ_SEARCH' + line_end;
+                        }
+                        cmd += '        depends_on:' + line_end;
+                        cmd += '            - machinaris' + line_end;
+                        cmd += line_end;
+                    }
+                }
+                return cmd;
+            }
+            $(document).ready(function () {
+                $('#plotting_keys_row').hide()
+                //$('#farmer_address_row').hide() 
+                $('#farmer_address').val(location.hostname)
+                $('#controller_host').val(location.hostname)
+                updateDocker();
+            });
+        </script>
+    </head>
+
+    <body>
+        <form>
+            <div class="rounded-2">
+                <div class="alert alert-warning" role="alert" id='errors'></div>
+                <div class="alert alert-secondary" role="alert" id='warnings'></div>
+                <div class="row mb-3">
+                    <div class="col offset">
+                        <label for="hostname" class="form-label">Controller Hostname</label>
+                        <input type="text" class="form-control" placeholder="myhostname" aria-label="hostname"
+                            id='hostname' onkeyup="updateDocker()">
+                    </div>
+                    <div class="col offset">
+                        <label for="controller_ip_addr" class="form-label">Controller IP Address</label>
+                        <input type="text" class="form-control" placeholder="192.168.1.125" aria-label="controller_ip_addr"
+                            id='controller_ip_addr' onkeyup="updateDocker()">
                     </div>
                 </div>
-                <div class="col offset">
-                    <label for="inputState" class="form-label">Initial Blockchain <a href="https://github.com/guydavis/machinaris/wiki/Blockchains#blockchain-sync" target="_blank"><i class="fs-4 bi-question-circle text-white"></i></a></label>
-                    <div class="row">
-                        <div class="col">
-                            <input class="form-check-input" type="radio" name="blockchain" id="blockchain-sync" value="sync" checked
-                                onclick="updateVolumes(); updateDocker()">
-                            <label class="form-check-label" for="blockchain-sync">
-                                Standard Sync
-                            </label>
+                <div class="row mb-3">
+                    <div class="col offset">
+                        <label for="inputState" class="form-label">Operating System <a href="https://github.com/guydavis/machinaris/wiki/Docker" target="_blank"><i class="fs-4 bi-question-circle text-white"></i></a></label>
+                        <div class="row">
+                            <div class="col">
+                                <input class="form-check-input" type="radio" name="os" id="os-linux" value="linux" checked
+                                    onclick="updateVolumes(); updateDocker()">
+                                <label class="form-check-label" for="os-linux">
+                                    Linux
+                                </label>
+                            </div>
+                            <div class="col">
+                                <input class="form-check-input" type="radio" name="os" id="os-macintosh" value="macintosh"
+                                    onclick="updateVolumes(); updateDocker()">
+                                <label class="form-check-label" for="os-macintosh">
+                                    Macintosh
+                                </label>
+                            </div>
+                            <div class="col">
+                                <input class="form-check-input" type="radio" name="os" id="os-windows" value="windows"
+                                    onclick="updateVolumes(); updateDocker()">
+                                <label class="form-check-label" for="os-windows">
+                                    Windows
+                                </label>
+                            </div>
                         </div>
-                        <div class="col">
-                            <input class="form-check-input" type="radio" name="blockchain" id="blockchain-import" value="import"
-                                onclick="updateVolumes(); updateDocker()" >
-                            <label class="form-check-label" for="blockchain-import">
-                                Import My Own
-                            </label>
-                        </div>
-                        <div class="col">
-                            <input class="form-check-input" type="radio" name="blockchain" id="blockchain-download" value="download"
-                                onclick="updateVolumes(); updateDocker()">
-                            <label class="form-check-label" for="blockchain-download">
-                                Download New
-                            </label>
+                    </div>
+                    <div class="col offset">
+                        <label for="inputState" class="form-label">Initial Blockchain <a href="https://github.com/guydavis/machinaris/wiki/Blockchains#blockchain-sync" target="_blank"><i class="fs-4 bi-question-circle text-white"></i></a></label>
+                        <div class="row">
+                            <div class="col">
+                                <input class="form-check-input" type="radio" name="blockchain" id="blockchain-sync" value="sync" checked
+                                    onclick="updateVolumes(); updateDocker()">
+                                <label class="form-check-label" for="blockchain-sync">
+                                    Standard Sync
+                                </label>
+                            </div>
+                            <div class="col">
+                                <input class="form-check-input" type="radio" name="blockchain" id="blockchain-import" value="import"
+                                    onclick="updateVolumes(); updateDocker()" >
+                                <label class="form-check-label" for="blockchain-import">
+                                    Import My Own
+                                </label>
+                            </div>
+                            <div class="col">
+                                <input class="form-check-input" type="radio" name="blockchain" id="blockchain-download" value="download"
+                                    onclick="updateVolumes(); updateDocker()">
+                                <label class="form-check-label" for="blockchain-download">
+                                    Download New
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="row mb-3">
-                <div class="col offset">
-                    <label for="inputState" class="form-label">Blockchains to Farm <a href="https://github.com/guydavis/machinaris/wiki/Forks" target="_blank"><i class="fs-4 bi-question-circle text-white"></i></a></label>
-                    <div class="row">
-                        <div class="col">
-                            <input class="form-check-input" type="checkbox" name="blockchains"
-                                id="blockchain-apple" onclick="updateDocker()" value="apple">
-                            <label class="form-check-label" for="blockchain-apple">
-                                Apple
-                            </label>
+                <div class="row mb-3">
+                    <div class="col offset">
+                        <label for="inputState" class="form-label">Blockchains to Farm <a href="https://github.com/guydavis/machinaris/wiki/Forks" target="_blank"><i class="fs-4 bi-question-circle text-white"></i></a></label>
+                        <div class="row">
+                            <div class="col">
+                                <input class="form-check-input" type="checkbox" name="blockchains"
+                                    id="blockchain-apple" onclick="updateDocker()" value="apple">
+                                <label class="form-check-label" for="blockchain-apple">
+                                    Apple
+                                </label>
+                            </div>
+                            <div class="col">
+                                <input class="form-check-input" type="checkbox" name="blockchains"
+                                    id="blockchain-ballcoin" onclick="updateDocker()" value="ballcoin">
+                                <label class="form-check-label" for="blockchain-ballcoin">
+                                    Ballcoin
+                                </label>
+                            </div>
+                            <div class="col">
+                                <input class="form-check-input" type="checkbox" name="blockchains"
+                                    id="blockchain-bpx" onclick="updateDocker()" value="bpx">
+                                <label class="form-check-label" for="blockchain-bpx">
+                                    BPX
+                                </label>
+                            </div>
+                            <div class="col">
+                                <input class="form-check-input" type="checkbox" name="blockchains"
+                                    id="blockchain-btcgreen" onclick="updateDocker()" value="btcgreen">
+                                <label class="form-check-label" for="blockchain-btcgreen">
+                                    BTCGreen
+                                </label>
+                            </div>
+                            <div class="col">
+                                <input class="form-check-input" type="checkbox" name="blockchains"
+                                    id="blockchain-cactus" onclick="updateDocker()" value="cactus">
+                                <label class="form-check-label" for="blockchain-cactus">
+                                    Cactus
+                                </label>
+                            </div>
                         </div>
-                        <div class="col">
-                            <input class="form-check-input" type="checkbox" name="blockchains"
-                                id="blockchain-ballcoin" onclick="updateDocker()" value="ballcoin">
-                            <label class="form-check-label" for="blockchain-ballcoin">
-                                Ballcoin
-                            </label>
+                        <div class="row">
+                            <div class="col">
+                                <!-- Chia is always required and enabled, not possible to exclude it -->
+                                <input class="form-check-input" type="checkbox" checked="checked"  
+                                    id="blockchain-chia" value="chia" onclick="return false;">
+                                <label class="form-check-label" for="blockchain-chia">
+                                    Chia (Required)
+                                </label>
+                            </div>
+                            <div class="col">
+                                <input class="form-check-input" type="checkbox" name="blockchains"
+                                    id="blockchain-chinilla" onclick="updateDocker()" value="chinilla">
+                                <label class="form-check-label" for="blockchain-chinilla">
+                                    Chinilla
+                                </label>
+                            </div>
+                            <div class="col">
+                                <input class="form-check-input" type="checkbox" name="blockchains"
+                                    id="blockchain-chives" onclick="updateDocker()" value="chives">
+                                <label class="form-check-label" for="blockchain-chives">
+                                    Chives
+                                </label>
+                            </div>
+                            <div class="col">
+                                <input class="form-check-input" type="checkbox" name="blockchains"
+                                    id="blockchain-coffee" onclick="updateDocker()" value="coffee">
+                                <label class="form-check-label" for="blockchain-coffee">
+                                    Coffee
+                                </label>
+                            </div>
+                            <div class="col">
+                                <input class="form-check-input" type="checkbox" name="blockchains"
+                                    id="blockchain-cryptodoge" onclick="updateDocker()" value="cryptodoge">
+                                <label class="form-check-label" for="blockchain-cryptodoge">
+                                    CryptoDoge
+                                </label>
+                            </div>
                         </div>
-                        <div class="col">
-                            <input class="form-check-input" type="checkbox" name="blockchains"
-                                id="blockchain-bpx" onclick="updateDocker()" value="bpx">
-                            <label class="form-check-label" for="blockchain-bpx">
-                                BPX
-                            </label>
+                        <div class="row">
+                            <div class="col">
+                                <input class="form-check-input" type="checkbox" name="blockchains"
+                                    id="blockchain-ecostake" onclick="updateDocker()" value="ecostake">
+                                <label class="form-check-label" for="blockchain-ecostake">
+                                    Ecostake
+                                </label>
+                            </div>
+                            <div class="col">
+                                <input class="form-check-input" type="checkbox" name="blockchains"
+                                    id="blockchain-flax" onclick="updateDocker()" value="flax">
+                                <label class="form-check-label" for="blockchain-flax">
+                                    Flax
+                                </label>
+                            </div>
+                            <div class="col">
+                                <input class="form-check-input" type="checkbox" name="blockchains"
+                                    id="blockchain-flora" onclick="updateDocker()" value="flora">
+                                <label class="form-check-label" for="blockchain-flora">
+                                    Flora
+                                </label>
+                            </div>
+                            <div class="col">
+                                <input class="form-check-input" type="checkbox" name="blockchains"
+                                    id="blockchain-gigahorse" onclick="updateDocker()" value="gigahorse">
+                                <label class="form-check-label" for="blockchain-gigahorse">
+                                    Gigahorse
+                                </label>
+                            </div>
+                            <div class="col">
+                                <input class="form-check-input" type="checkbox" name="blockchains"
+                                    id="blockchain-gold" onclick="updateDocker()" value="gold">
+                                <label class="form-check-label" for="blockchain-gold">
+                                    Gold
+                                </label>
+                            </div>
                         </div>
-                        <div class="col">
-                            <input class="form-check-input" type="checkbox" name="blockchains"
-                                id="blockchain-btcgreen" onclick="updateDocker()" value="btcgreen">
-                            <label class="form-check-label" for="blockchain-btcgreen">
-                                BTCGreen
-                            </label>
+                        <div class="row">
+                            <div class="col">
+                                <input class="form-check-input" type="checkbox" name="blockchains"
+                                    id="blockchain-greenbtc" onclick="updateDocker()" value="greenbtc">
+                                <label class="form-check-label" for="blockchain-greenbtc">
+                                    GreenBTC
+                                </label>
+                            </div>
+                            <div class="col">
+                                <input class="form-check-input" type="checkbox" name="blockchains"
+                                    id="blockchain-hddcoin" onclick="updateDocker()" value="hddcoin">
+                                <label class="form-check-label" for="blockchain-hddcoin">
+                                    HDDCoin
+                                </label>
+                            </div>
+                            <div class="col">
+                                <input class="form-check-input" type="checkbox" name="blockchains"
+                                    id="blockchain-littlelambocoin" onclick="updateDocker()" value="littlelambocoin">
+                                <label class="form-check-label" for="blockchain-littlelambocoin">
+                                    LittleLamboCoin
+                                </label>
+                            </div>
+                            <div class="col">
+                                <input class="form-check-input" type="checkbox" name="blockchains"
+                                    id="blockchain-maize" onclick="updateDocker()" value="maize">
+                                <label class="form-check-label" for="blockchain-maize">
+                                    Maize
+                                </label>
+                            </div>
+                            <div class="col">
+                                <input class="form-check-input" type="checkbox" name="blockchains"
+                                    id="blockchain-mint" onclick="updateDocker()" value="mint">
+                                <label class="form-check-label" for="blockchain-mint">
+                                    Mint
+                                </label>
+                            </div>
                         </div>
-                        <div class="col">
-                            <input class="form-check-input" type="checkbox" name="blockchains"
-                                id="blockchain-cactus" onclick="updateDocker()" value="cactus">
-                            <label class="form-check-label" for="blockchain-cactus">
-                                Cactus
-                            </label>
+                        <div class="row">
+                            <div class="col">
+                                <input class="form-check-input" type="checkbox" name="blockchains"
+                                    id="blockchain-mmx" onclick="updateDocker()" value="mmx">
+                                <label class="form-check-label" for="blockchain-mmx">
+                                    MMX
+                                </label>
+                            </div>
+                            <div class="col">
+                                <input class="form-check-input" type="checkbox" name="blockchains"
+                                    id="blockchain-moon" onclick="updateDocker()" value="moon">
+                                <label class="form-check-label" for="blockchain-moon">
+                                    Moon
+                                </label>
+                            </div>
+                            <div class="col">
+                                <input class="form-check-input" type="checkbox" name="blockchains"
+                                    id="blockchain-nchain" onclick="updateDocker()" value="nchain">
+                                <label class="form-check-label" for="blockchain-nchain">
+                                    N-Chain
+                                </label>
+                            </div>
+                            <div class="col">
+                                <input class="form-check-input" type="checkbox" name="blockchains"
+                                    id="blockchain-one" onclick="updateDocker()" value="one">
+                                <label class="form-check-label" for="blockchain-one">
+                                    One
+                                </label>
+                            </div>
+                            <div class="col">
+                                <input class="form-check-input" type="checkbox" name="blockchains"
+                                    id="blockchain-petroleum" onclick="updateDocker()" value="petroleum">
+                                <label class="form-check-label" for="blockchain-petroleum">
+                                    Petroleum
+                                </label>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <!-- Chia is always required and enabled, not possible to exclude it -->
-                            <input class="form-check-input" type="checkbox" checked="checked"  
-                                id="blockchain-chia" value="chia" onclick="return false;">
-                            <label class="form-check-label" for="blockchain-chia">
-                                Chia (Required)
-                            </label>
+                        <div class="row">
+                            <div class="col">
+                                <input class="form-check-input" type="checkbox" name="blockchains"
+                                    id="blockchain-pipscoin" onclick="updateDocker()" value="pipscoin">
+                                <label class="form-check-label" for="blockchain-pipscoin">
+                                    Pipscoin
+                                </label>
+                            </div>
+                            <div class="col">
+                                <input class="form-check-input" type="checkbox" name="blockchains"
+                                    id="blockchain-profit" onclick="updateDocker()" value="profit">
+                                <label class="form-check-label" for="blockchain-profit">
+                                    Profit
+                                </label>
+                            </div>
+                            <div class="col">
+                                <input class="form-check-input" type="checkbox" name="blockchains"
+                                    id="blockchain-shibgreen" onclick="updateDocker()" value="shibgreen">
+                                <label class="form-check-label" for="blockchain-shibgreen">
+                                    SHIBGreen
+                                </label>
+                            </div>
+                            <div class="col">
+                                <input class="form-check-input" type="checkbox" name="blockchains"
+                                    id="blockchain-staicoin" onclick="updateDocker()" value="staicoin">
+                                <label class="form-check-label" for="blockchain-staicoin">
+                                    Staicoin
+                                </label>
+                            </div>
+                            <div class="col">
+                                <input class="form-check-input" type="checkbox" name="blockchains"
+                                    id="blockchain-stor" onclick="updateDocker()" value="stor">
+                                <label class="form-check-label" for="blockchain-stor">
+                                    Stor
+                                </label>
+                            </div>
                         </div>
-                        <div class="col">
-                            <input class="form-check-input" type="checkbox" name="blockchains"
-                                id="blockchain-chinilla" onclick="updateDocker()" value="chinilla">
-                            <label class="form-check-label" for="blockchain-chinilla">
-                                Chinilla
-                            </label>
+                        <div class="row">
+                            <div class="col">
+                                <input class="form-check-input" type="checkbox" name="blockchains"
+                                    id="blockchain-tad" onclick="updateDocker()" value="tad">
+                                <label class="form-check-label" for="blockchain-tad">
+                                    Tad
+                                </label>
+                            </div>
+                            <div class="col">
+                                <input class="form-check-input" type="checkbox" name="blockchains"
+                                    id="blockchain-wheat" onclick="updateDocker()" value="wheat">
+                                <label class="form-check-label" for="blockchain-wheat">
+                                    Wheat
+                                </label>
+                            </div>
+                            <div class="col">&nbsp;</div>
+                            <div class="col">&nbsp;</div>
+                            <div class="col">&nbsp;</div>
                         </div>
-                        <div class="col">
-                            <input class="form-check-input" type="checkbox" name="blockchains"
-                                id="blockchain-chives" onclick="updateDocker()" value="chives">
-                            <label class="form-check-label" for="blockchain-chives">
-                                Chives
-                            </label>
-                        </div>
-                        <div class="col">
-                            <input class="form-check-input" type="checkbox" name="blockchains"
-                                id="blockchain-coffee" onclick="updateDocker()" value="coffee">
-                            <label class="form-check-label" for="blockchain-coffee">
-                                Coffee
-                            </label>
-                        </div>
-                        <div class="col">
-                            <input class="form-check-input" type="checkbox" name="blockchains"
-                                id="blockchain-cryptodoge" onclick="updateDocker()" value="cryptodoge">
-                            <label class="form-check-label" for="blockchain-cryptodoge">
-                                CryptoDoge
-                            </label>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <input class="form-check-input" type="checkbox" name="blockchains"
-                                id="blockchain-ecostake" onclick="updateDocker()" value="ecostake">
-                            <label class="form-check-label" for="blockchain-ecostake">
-                                Ecostake
-                            </label>
-                        </div>
-                        <div class="col">
-                            <input class="form-check-input" type="checkbox" name="blockchains"
-                                id="blockchain-flax" onclick="updateDocker()" value="flax">
-                            <label class="form-check-label" for="blockchain-flax">
-                                Flax
-                            </label>
-                        </div>
-                        <div class="col">
-                            <input class="form-check-input" type="checkbox" name="blockchains"
-                                id="blockchain-flora" onclick="updateDocker()" value="flora">
-                            <label class="form-check-label" for="blockchain-flora">
-                                Flora
-                            </label>
-                        </div>
-                        <div class="col">
-                            <input class="form-check-input" type="checkbox" name="blockchains"
-                                id="blockchain-gigahorse" onclick="updateDocker()" value="gigahorse">
-                            <label class="form-check-label" for="blockchain-gigahorse">
-                                Gigahorse
-                            </label>
-                        </div>
-                        <div class="col">
-                            <input class="form-check-input" type="checkbox" name="blockchains"
-                                id="blockchain-gold" onclick="updateDocker()" value="gold">
-                            <label class="form-check-label" for="blockchain-gold">
-                                Gold
-                            </label>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <input class="form-check-input" type="checkbox" name="blockchains"
-                                id="blockchain-greenbtc" onclick="updateDocker()" value="greenbtc">
-                            <label class="form-check-label" for="blockchain-greenbtc">
-                                GreenBTC
-                            </label>
-                        </div>
-                        <div class="col">
-                            <input class="form-check-input" type="checkbox" name="blockchains"
-                                id="blockchain-hddcoin" onclick="updateDocker()" value="hddcoin">
-                            <label class="form-check-label" for="blockchain-hddcoin">
-                                HDDCoin
-                            </label>
-                        </div>
-                        <div class="col">
-                            <input class="form-check-input" type="checkbox" name="blockchains"
-                                id="blockchain-littlelambocoin" onclick="updateDocker()" value="littlelambocoin">
-                            <label class="form-check-label" for="blockchain-littlelambocoin">
-                                LittleLamboCoin
-                            </label>
-                        </div>
-                        <div class="col">
-                            <input class="form-check-input" type="checkbox" name="blockchains"
-                                id="blockchain-maize" onclick="updateDocker()" value="maize">
-                            <label class="form-check-label" for="blockchain-maize">
-                                Maize
-                            </label>
-                        </div>
-                        <div class="col">
-                            <input class="form-check-input" type="checkbox" name="blockchains"
-                                id="blockchain-mint" onclick="updateDocker()" value="mint">
-                            <label class="form-check-label" for="blockchain-mint">
-                                Mint
-                            </label>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <input class="form-check-input" type="checkbox" name="blockchains"
-                                id="blockchain-mmx" onclick="updateDocker()" value="mmx">
-                            <label class="form-check-label" for="blockchain-mmx">
-                                MMX
-                            </label>
-                        </div>
-                        <div class="col">
-                            <input class="form-check-input" type="checkbox" name="blockchains"
-                                id="blockchain-moon" onclick="updateDocker()" value="moon">
-                            <label class="form-check-label" for="blockchain-moon">
-                                Moon
-                            </label>
-                        </div>
-                        <div class="col">
-                            <input class="form-check-input" type="checkbox" name="blockchains"
-                                id="blockchain-nchain" onclick="updateDocker()" value="nchain">
-                            <label class="form-check-label" for="blockchain-nchain">
-                                N-Chain
-                            </label>
-                        </div>
-                        <div class="col">
-                            <input class="form-check-input" type="checkbox" name="blockchains"
-                                id="blockchain-one" onclick="updateDocker()" value="one">
-                            <label class="form-check-label" for="blockchain-one">
-                                One
-                            </label>
-                        </div>
-                        <div class="col">
-                            <input class="form-check-input" type="checkbox" name="blockchains"
-                                id="blockchain-petroleum" onclick="updateDocker()" value="petroleum">
-                            <label class="form-check-label" for="blockchain-petroleum">
-                                Petroleum
-                            </label>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <input class="form-check-input" type="checkbox" name="blockchains"
-                                id="blockchain-pipscoin" onclick="updateDocker()" value="pipscoin">
-                            <label class="form-check-label" for="blockchain-pipscoin">
-                                Pipscoin
-                            </label>
-                        </div>
-                        <div class="col">
-                            <input class="form-check-input" type="checkbox" name="blockchains"
-                                id="blockchain-profit" onclick="updateDocker()" value="profit">
-                            <label class="form-check-label" for="blockchain-profit">
-                                Profit
-                            </label>
-                        </div>
-                        <div class="col">
-                            <input class="form-check-input" type="checkbox" name="blockchains"
-                                id="blockchain-shibgreen" onclick="updateDocker()" value="shibgreen">
-                            <label class="form-check-label" for="blockchain-shibgreen">
-                                SHIBGreen
-                            </label>
-                        </div>
-                        <div class="col">
-                            <input class="form-check-input" type="checkbox" name="blockchains"
-                                id="blockchain-staicoin" onclick="updateDocker()" value="staicoin">
-                            <label class="form-check-label" for="blockchain-staicoin">
-                                Staicoin
-                            </label>
-                        </div>
-                        <div class="col">
-                            <input class="form-check-input" type="checkbox" name="blockchains"
-                                id="blockchain-stor" onclick="updateDocker()" value="stor">
-                            <label class="form-check-label" for="blockchain-stor">
-                                Stor
-                            </label>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <input class="form-check-input" type="checkbox" name="blockchains"
-                                id="blockchain-tad" onclick="updateDocker()" value="tad">
-                            <label class="form-check-label" for="blockchain-tad">
-                                Tad
-                            </label>
-                        </div>
-                        <div class="col">
-                            <input class="form-check-input" type="checkbox" name="blockchains"
-                                id="blockchain-wheat" onclick="updateDocker()" value="wheat">
-                            <label class="form-check-label" for="blockchain-wheat">
-                                Wheat
-                            </label>
-                        </div>
-                        <div class="col">&nbsp;</div>
-                        <div class="col">&nbsp;</div>
-                        <div class="col">&nbsp;</div>
                     </div>
                 </div>
-            </div>
-            <h4>Volume Mounts <a href="https://github.com/guydavis/machinaris/wiki/FAQ#can-i-use-two-or-more-final-destination-directories-to-hold-my-plots" target="_blank"><i class="fs-4 bi-question-circle text-white"></i></a></h4>
-            <p style="display:none" id="windows_volume_mount_warning">NOTE: Please indicate whether the volume is a LOCAL drive or a REMOTE share. For remote shares, please save your credentials as per the <a href="https://github.com/guydavis/machinaris/wiki/Windows#network-share-access" target="_blank">wiki.</a></p>
-            <div class="row mb-3" id="volumes">
-                <div class="row mb-3 volume">
-                    <div class="col-md">
-                        <label for="volume_host_path0" class="form-label">Host Path</label>
-                        <input type="text" class="form-control" placeholder="/mnt/disk1" onkeyup="updateDocker()"
-                            name="volume_host_path" id="volume_host_path0" aria-label="volume_host_path0">
+                <h4>Volume Mounts <a href="https://github.com/guydavis/machinaris/wiki/FAQ#can-i-use-two-or-more-final-destination-directories-to-hold-my-plots" target="_blank"><i class="fs-4 bi-question-circle text-white"></i></a></h4>
+                <p style="display:none" id="windows_volume_mount_warning">NOTE: Please indicate whether the volume is a LOCAL drive or a REMOTE share. For remote shares, please save your credentials as per the <a href="https://github.com/guydavis/machinaris/wiki/Windows#network-share-access" target="_blank">wiki.</a></p>
+                <div class="row mb-3" id="volumes">
+                    <div class="row mb-3 volume">
+                        <div class="col-md">
+                            <label for="volume_host_path0" class="form-label">Host Path</label>
+                            <input type="text" class="form-control" placeholder="/mnt/disk1" onkeyup="updateDocker()"
+                                name="volume_host_path" id="volume_host_path0" aria-label="volume_host_path0">
+                        </div>
+                        <div class="col-sm">
+                            <label for="volume_container_path0" class="form-label">Container Path</label>
+                            <input type="text" class="form-control" value="/plots1" aria-label="volume_container_path0"
+                                name="volume_container_path" id="volume_container_path0" onkeyup="updateDocker()">
+                        </div>
+                        <div class="col-auto">
+                            <label for="volume_type0" class="form-label">Used for:</label>
+                            <select class="form-select" id="volume_type0" name="volume_type" aria-label="volume_type0"
+                                onchange="updateDocker()">
+                                <option value="plots" selected>Final Plots</option>
+                                <option value="plotting">Plotting Temp</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-auto volume_location" style="display:none">
+                            <label for="volume_location0" class="form-label">Location</label>
+                            <select class="form-select" id="volume_location0" name="volume_location" aria-label="volume_location0"
+                                onchange="updateDocker()">
+                                <option value="local" selected>Local</option>
+                                <option value="remote">Remote</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="col-sm">
-                        <label for="volume_container_path0" class="form-label">Container Path</label>
-                        <input type="text" class="form-control" value="/plots1" aria-label="volume_container_path0"
-                            name="volume_container_path" id="volume_container_path0" onkeyup="updateDocker()">
+                    <div class="row mb-3 volume">
+                        <div class="col-md">
+                            <label for="volume_host_path1" class="form-label">Host Path</label>
+                            <input type="text" class="form-control" placeholder="/mnt/temp1" onkeyup="updateDocker()"
+                                name="volume_host_path" id="volume_host_path1" aria-label="volume_host_path1">
+                        </div>
+                        <div class="col-sm">
+                            <label for="volume_container_path1" class="form-label">Container Path</label>
+                            <input type="text" class="form-control" value="/plotting" aria-label="volume_container_path1"
+                                name="volume_container_path" id="volume_container_path1" onkeyup="updateDocker()">
+                        </div>
+                        <div class="col-auto">
+                            <label for="volume_type1" class="form-label">Used for:</label>
+                            <select class="form-select" id="volume_type1" name="volume_type" aria-label="volume_type1"
+                                onchange="updateDocker()">
+                                <option value="plots">Final Plots</option>
+                                <option value="plotting" selected>Plotting Temp</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-auto volume_location" style="display:none">
+                            <label for="volume_location1" class="form-label">Location</label>
+                            <select class="form-select" id="volume_location1" name="volume_location" aria-label="volume_location1"
+                                onchange="updateDocker()">
+                                <option value="local" selected>Local</option>
+                                <option value="remote">Remote</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col">
                     </div>
                     <div class="col-auto">
-                        <label for="volume_type0" class="form-label">Used for:</label>
-                        <select class="form-select" id="volume_type0" name="volume_type" aria-label="volume_type0"
-                            onchange="updateDocker()">
-                            <option value="plots" selected>Final Plots</option>
-                            <option value="plotting">Plotting Temp</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-                    <div class="col-auto volume_location" style="display:none">
-                        <label for="volume_location0" class="form-label">Location</label>
-                        <select class="form-select" id="volume_location0" name="volume_location" aria-label="volume_location0"
-                            onchange="updateDocker()">
-                            <option value="local" selected>Local</option>
-                            <option value="remote">Remote</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="row mb-3 volume">
-                    <div class="col-md">
-                        <label for="volume_host_path1" class="form-label">Host Path</label>
-                        <input type="text" class="form-control" placeholder="/mnt/temp1" onkeyup="updateDocker()"
-                            name="volume_host_path" id="volume_host_path1" aria-label="volume_host_path1">
-                    </div>
-                    <div class="col-sm">
-                        <label for="volume_container_path1" class="form-label">Container Path</label>
-                        <input type="text" class="form-control" value="/plotting" aria-label="volume_container_path1"
-                            name="volume_container_path" id="volume_container_path1" onkeyup="updateDocker()">
-                    </div>
-                    <div class="col-auto">
-                        <label for="volume_type1" class="form-label">Used for:</label>
-                        <select class="form-select" id="volume_type1" name="volume_type" aria-label="volume_type1"
-                            onchange="updateDocker()">
-                            <option value="plots">Final Plots</option>
-                            <option value="plotting" selected>Plotting Temp</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-                    <div class="col-auto volume_location" style="display:none">
-                        <label for="volume_location1" class="form-label">Location</label>
-                        <select class="form-select" id="volume_location1" name="volume_location" aria-label="volume_location1"
-                            onchange="updateDocker()">
-                            <option value="local" selected>Local</option>
-                            <option value="remote">Remote</option>
-                        </select>
+                        <a href="#volumes" onclick="volumeAdd(); return false" title="Add New Volume"><i
+                                class="fs-4 bi-plus text-white text-right"></i></a><a href="#volumes"
+                            onclick="volumeRemove();return false" title="Remove Last Volume"><i
+                                class="fs-4 bi-dash text-white text-right"></i></a>
                     </div>
                 </div>
             </div>
-            <div class="row mb-3">
-                <div class="col">
-                </div>
-                <div class="col-auto">
-                    <a href="#volumes" onclick="volumeAdd(); return false" title="Add New Volume"><i
-                            class="fs-4 bi-plus text-white text-right"></i></a><a href="#volumes"
-                        onclick="volumeRemove();return false" title="Remove Last Volume"><i
-                            class="fs-4 bi-dash text-white text-right"></i></a>
-                </div>
-            </div>
+        </form>
+        <div class="rounded-3 small" id="docker_compose">
+            <a style="float:right;" href="#" title="Copy"
+                onclick="copyTextToClipboard(document.getElementById('compose').innerHTML); return false">
+                <i class="fs-4 bi-clipboard text-white"></i>
+            </a>
+            <h2>Docker Compose</h2>
+            <pre id="compose"></pre>
+            <br/>
+            <small><i>NOTE: Passing a GPU thru into the container requires additional config.  Please see the
+                <a class='text-white' href="https://github.com/guydavis/machinaris/wiki/MMX#can-i-use-my-gpu" target="_blank">wiki.</a></i></small>
         </div>
-    </form>
-    <div class="rounded-3 small" id="docker_compose">
-        <a style="float:right;" href="#" title="Copy"
-            onclick="copyTextToClipboard(document.getElementById('compose').innerHTML); return false">
-            <i class="fs-4 bi-clipboard text-white"></i>
-        </a>
-        <h2>Docker Compose</h2>
-        <pre id="compose"></pre>
-        <br/>
-        <small><i>NOTE: Passing a GPU thru into the container requires additional config.  Please see the
-            <a class='text-white' href="https://github.com/guydavis/machinaris/wiki/MMX#can-i-use-my-gpu" target="_blank">wiki.</a></i></small>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
-        crossorigin="anonymous"></script>
-    <script>
-        function copyTextToClipboard(text) {
-            console.log(text)
-            var textArea = document.createElement("textarea");
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+            crossorigin="anonymous"></script>
+        <script>
+            function copyTextToClipboard(text) {
+                console.log(text)
+                var textArea = document.createElement("textarea");
 
-            //
-            // *** This styling is an extra step which is likely not required. ***
-            //
-            // Why is it here? To ensure:
-            // 1. the element is able to have focus and selection.
-            // 2. if the element was to flash render it has minimal visual impact.
-            // 3. less flakyness with selection and copying which **might** occur if
-            //    the textarea element is not visible.
-            //
-            // The likelihood is the element won't even render, not even a
-            // flash, so some of these are just precautions. However in
-            // Internet Explorer the element is visible whilst the popup
-            // box asking the user for permission for the web page to
-            // copy to the clipboard.
-            //
+                //
+                // *** This styling is an extra step which is likely not required. ***
+                //
+                // Why is it here? To ensure:
+                // 1. the element is able to have focus and selection.
+                // 2. if the element was to flash render it has minimal visual impact.
+                // 3. less flakyness with selection and copying which **might** occur if
+                //    the textarea element is not visible.
+                //
+                // The likelihood is the element won't even render, not even a
+                // flash, so some of these are just precautions. However in
+                // Internet Explorer the element is visible whilst the popup
+                // box asking the user for permission for the web page to
+                // copy to the clipboard.
+                //
 
-            // Place in the top-left corner of screen regardless of scroll position.
-            textArea.style.position = 'fixed';
-            textArea.style.top = 0;
-            textArea.style.left = 0;
+                // Place in the top-left corner of screen regardless of scroll position.
+                textArea.style.position = 'fixed';
+                textArea.style.top = 0;
+                textArea.style.left = 0;
 
-            // Ensure it has a small width and height. Setting to 1px / 1em
-            // doesn't work as this gives a negative w/h on some browsers.
-            textArea.style.width = '2em';
-            textArea.style.height = '2em';
+                // Ensure it has a small width and height. Setting to 1px / 1em
+                // doesn't work as this gives a negative w/h on some browsers.
+                textArea.style.width = '2em';
+                textArea.style.height = '2em';
 
-            // We don't need padding, reducing the size if it does flash render.
-            textArea.style.padding = 0;
+                // We don't need padding, reducing the size if it does flash render.
+                textArea.style.padding = 0;
 
-            // Clean up any borders.
-            textArea.style.border = 'none';
-            textArea.style.outline = 'none';
-            textArea.style.boxShadow = 'none';
+                // Clean up any borders.
+                textArea.style.border = 'none';
+                textArea.style.outline = 'none';
+                textArea.style.boxShadow = 'none';
 
-            // Avoid flash of the white box if rendered for any reason.
-            textArea.style.background = 'transparent';
+                // Avoid flash of the white box if rendered for any reason.
+                textArea.style.background = 'transparent';
 
 
-            textArea.value = text;
+                textArea.value = text;
 
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
 
-            try {
-                var successful = document.execCommand('copy');
-                var msg = successful ? 'successful' : 'unsuccessful';
-                console.log('Copying text command was ' + msg);
-            } catch (err) {
-                console.log('Oops, unable to copy');
+                try {
+                    var successful = document.execCommand('copy');
+                    var msg = successful ? 'successful' : 'unsuccessful';
+                    console.log('Copying text command was ' + msg);
+                } catch (err) {
+                    console.log('Oops, unable to copy');
+                }
+
+                document.body.removeChild(textArea);
             }
+        </script>
+    </body>
 
-            document.body.removeChild(textArea);
-        }
-    </script>
-</body>
-
-</html>
+    </html>
