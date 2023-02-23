@@ -131,6 +131,10 @@
                 } else if (blockchains_selected >= 5) { // Chia not counted for some reason
                     warnings.push("You have choosen more than five blockchains to launch at once. During initial sync, each blockchain uses more computer resources.  As such, please add blockchains in batches of five at a time, until each batch is fully synced.  This guidance can be lifted for high performance machines.");
                 }
+                var os = getRadioButtonValue('os')
+                if (os == 'windows') {
+                    warnings.push("Please be mindful of the <a href='https://github.com/guydavis/machinaris/wiki/Windows#known-issues' target='_blank'>inherent weaknesses</a> of Docker on Windows, related to slow I/O for plotting and issues with GPU pass through.");
+                }
                 return warnings;
             }
             function updateDocker() {
