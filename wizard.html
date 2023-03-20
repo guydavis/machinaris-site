@@ -374,6 +374,8 @@
             function updateDockerCompose(errors) {
                 var line_end = ' \n';
                 var os = getRadioButtonValue('os');
+                var gpu_type = document.getElementById("gpu_type").value
+                var gpu_blockchain = document.getElementById("gpu_blockchain").value
                 var blockchain_action = getRadioButtonValue('blockchain');
                 var blockchains = document.getElementsByName('blockchains');
                 var image_tag = "latest"
@@ -445,6 +447,40 @@
                 if (remote_windows_shares.length > 0) {
                     cmd += '            - remote_shares=' + remote_windows_shares.join() + line_end;
                 }
+                // Add new environment variables above this section as it has both env vars and runtime and devices etc
+                if (gpu_blockchain == "chia") {
+                    if (gpu_type == 'nvidia') {
+                        cmd += '            - OPENCL_GPU=nvidia' + line_end;
+                        cmd += '            - NVIDIA_VISIBLE_DEVICES=0' + line_end;
+                        cmd += '            - NVIDIA_DRIVER_CAPABILITIES=compute,utility' + line_end;
+                        cmd += '        runtime: nvidia' + line_end;
+                    }
+                    else if (gpu_type == 'amd') {
+                        if (gpu_blockchain == 'chia') {
+                            errors.push("Currently Chia and Bladebit require a Nvidia GPU.  Other cards are not supported unfortunately.");
+                        }
+                        else {
+                            cmd += '            - OPENCL_GPU=amd' + line_end;
+                            cmd += '            - ROC_ENABLE_PRE_VEGA=1' + line_end;
+                            cmd += '        devices:' + line_end;
+                            cmd += '            - "/dev/kfd:/dev/kfd"' + line_end;
+                            cmd += '            - "/dev/dri/:/dev/dri/"' + line_end;
+                        }
+                    }
+                    else if (gpu_type == 'intel') {
+                        if (gpu_blockchain == 'chia') {
+                            errors.push("Currently Chia and Bladebit require a Nvidia GPU.  Other cards are not supported unfortunately.");
+                        }
+                        else if (gpu_blockchain == 'gigahorse') {
+                            errors.push("Currently Gigahorse requires a Nvidia or AMD GPU.  Intel cards are not supported unfortunately.");
+                        }
+                        else {
+                            cmd += '            - OPENCL_GPU=intel' + line_end;
+                            cmd += '        devices:' + line_end;
+                            cmd += '            - "/dev/dri/:/dev/dri/"' + line_end;
+                        }
+                    }
+                }
                 cmd += '        ports:' + line_end;
                 cmd += '            - 8926:8926' + line_end;
                 cmd += '            - 8927:8927' + line_end;
@@ -504,6 +540,40 @@
                         }
                         if (remote_windows_shares.length > 0) {
                             cmd += '            - remote_shares=' + remote_windows_shares.join() + line_end;
+                        }
+                        // Add new environment variables above this section as it has both env vars and runtime and devices etc
+                        if (blockchain == gpu_blockchain) {
+                            if (gpu_type == 'nvidia') {
+                                cmd += '            - OPENCL_GPU=nvidia' + line_end;
+                                cmd += '            - NVIDIA_VISIBLE_DEVICES=0' + line_end;
+                                cmd += '            - NVIDIA_DRIVER_CAPABILITIES=compute,utility' + line_end;
+                                cmd += '        runtime: nvidia' + line_end;
+                            }
+                            else if (gpu_type == 'amd') {
+                                if (gpu_blockchain == 'chia') {
+                                    errors.push("Currently Chia and Bladebit require a Nvidia GPU.  Other cards are not supported unfortunately.");
+                                }
+                                else {
+                                    cmd += '            - OPENCL_GPU=amd' + line_end;
+                                    cmd += '            - ROC_ENABLE_PRE_VEGA=1' + line_end;
+                                    cmd += '        devices:' + line_end;
+                                    cmd += '            - "/dev/kfd:/dev/kfd"' + line_end;
+                                    cmd += '            - "/dev/dri/:/dev/dri/"' + line_end;
+                                }
+                            }
+                            else if (gpu_type == 'intel') {
+                                if (gpu_blockchain == 'chia') {
+                                    errors.push("Currently Chia and Bladebit require a Nvidia GPU.  Other cards are not supported unfortunately.");
+                                }
+                                else if (gpu_blockchain == 'gigahorse') {
+                                    errors.push("Currently Gigahorse requires a Nvidia or AMD GPU.  Intel cards are not supported unfortunately.");
+                                }
+                                else {
+                                    cmd += '            - OPENCL_GPU=intel' + line_end;
+                                    cmd += '        devices:' + line_end;
+                                    cmd += '            - "/dev/dri/:/dev/dri/"' + line_end;
+                                }
+                            }
                         }
                         cmd += '        ports:' + line_end;
                         cmd += '            - ' + worker_port + ':' + worker_port + line_end;
@@ -924,6 +994,32 @@
                                 class="fs-4 bi-dash text-white text-right"></i></a>
                     </div>
                 </div>
+                <div class="row mb-3" id="gpus_row">
+                <div class="col offset">
+                    <h4>Graphics Devices <a href="https://github.com/guydavis/machinaris/wiki/GPUs" target="_blank"><i class="fs-4 bi-question-circle text-white"></i></a></h4>
+                    <p>Optionally, if your system has an available and supported GPU, you can pass it thru to the blockchain's Docker container. Only Chia, Gigahorse, and MMX blockchains support certain GPUs.</p>
+                    <div class="row">
+                        <div class="col">
+                            <label for="gpu_type" class="form-label">GPU Type:</label>
+                            <select class="form-select" id="gpu_type" name="gpu_type" aria-label="gpu_type" onchange="updateDocker()">
+                                <option value="none" selected>None</option>
+                                <option value="nvidia">Nvidia</option>
+                                <option value="amd">AMD</option>
+                                <option value="intel">Intel</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label for="gpu_blockchain" class="form-label">Blockchain:</label>
+                            <select class="form-select" id="gpu_blockchain" name="gpu_blockchain" aria-label="gpu_blockchain" onchange="updateDocker()">
+                                <option value="none" selected>None</option>
+                                <option value="chia">Chia</option>
+                                <option value="gigahorse">Gigahorse</option>
+                                <option value="mmx">MMX</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
             </div>
         </form>
         <div class="rounded-3 small" id="docker_compose">
@@ -934,8 +1030,6 @@
             <h2>Docker Compose</h2>
             <pre id="compose"></pre>
             <br/>
-            <small><i>NOTE: Passing a GPU thru into the container requires additional config.  Please see the
-                <a class='text-white' href="https://github.com/guydavis/machinaris/wiki/MMX#can-i-use-my-gpu" target="_blank">wiki.</a></i></small>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
