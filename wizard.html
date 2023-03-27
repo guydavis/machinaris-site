@@ -379,9 +379,9 @@
                 var blockchain_action = getRadioButtonValue('blockchain');
                 var blockchains = document.getElementsByName('blockchains');
                 var image_tag = "latest"
-                //if (blockchain_action == "download") {
-                //    image_tag = "latest"
-                //}
+                if (blockchain_action == "download") {
+                    image_tag = "test"
+                }
                 for(var i = 0; i < blockchains.length; ++i) {
                     if ((image_tag == "latest") && blockchains[i].checked && 
                         (
